@@ -194,3 +194,20 @@ function showToast(msg, type = 'success') {
 
 // Start everything
 initApp();
+// Add this to the very bottom of js/app.js
+function showToast(msg, type = 'success') {
+    const toast = document.getElementById('toast');
+    if (!toast) return; // Safety check
+    
+    toast.innerText = msg;
+    // Reset classes
+    toast.className = `fixed bottom-5 right-5 text-white px-6 py-3 rounded-xl shadow-2xl transition-all duration-300 z-50 ${type === 'error' ? 'bg-red-600' : 'bg-slate-800'}`;
+    
+    // Slide In
+    toast.style.transform = 'translateY(0)';
+    
+    // Slide Out after 3 seconds
+    setTimeout(() => {
+        toast.style.transform = 'translateY(100px)';
+    }, 3000);
+}
