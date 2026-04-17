@@ -55,19 +55,18 @@ document.getElementById('login-form').onsubmit = async (e) => {
             loginPass: loginPass 
         });
 
-        if (res.success) {
-            showToast("Login Successful!");
-            
-            // Save user data to browser memory
-            localStorage.setItem('todo_user', JSON.stringify(res.user));
-            
-            // This is the part that "moves" you to the dashboard
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('register-screen').classList.add('hidden');
-            document.getElementById('app-screen').classList.remove('hidden');
-            
-            // Initialize the app dashboard (theme, lists, etc)
-            if (typeof initApp === "function") initApp();
+if (res.success) {
+    showToast("Login Successful!");
+    localStorage.setItem('todo_user', JSON.stringify(res.user));
+    
+    // HIDE the whole auth wrapper, not just the inner screens
+    document.getElementById('auth-container').classList.add('hidden'); 
+    
+    // SHOW the dashboard
+    document.getElementById('app-screen').classList.remove('hidden');
+    
+    if (typeof initApp === "function") initApp();
+}
             
         } else {
             showToast(res.message || "Invalid Email or Password", "error");
