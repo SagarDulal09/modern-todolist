@@ -38,19 +38,43 @@ document.getElementById('register-form').onsubmit = async (e) => {
 };
 
 // Handle Login
+// Handle Login
 document.getElementById('login-form').onsubmit = async (e) => {
     e.preventDefault();
+    
     const loginId = document.getElementById('login-id').value;
     const loginPass = document.getElementById('login-pass').value;
 
-    showToast("Checking credentials...");
-    const res = await apiRequest({ action: 'loginUser', loginId, loginPass });
+    showToast("Authenticating...");
 
-    if (res.success) {
-        localStorage.setItem('todo_user', JSON.stringify(res.user));
-        location.reload();
-    } else {
-        showToast("Invalid user or password.", "error");
+    try {
+        // We send 'loginUser' action to the script
+        const res = await apiRequest({ 
+            action: 'loginUser', 
+            loginId: loginId, 
+            loginPass: loginPass 
+        });
+
+        if (res.success) {
+            showToast("Login Successful!");
+            
+            // Save user data to browser memory
+            localStorage.setItem('todo_user', JSON.stringify(res.user));
+            
+            // This is the part that "moves" you to the dashboard
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('register-screen').classList.add('hidden');
+            document.getElementById('app-screen').classList.remove('hidden');
+            
+            // Initialize the app dashboard (theme, lists, etc)
+            if (typeof initApp === "function") initApp();
+            
+        } else {
+            showToast(res.message || "Invalid Email or Password", "error");
+        }
+    } catch (err) {
+        showToast("Connection error. Try again.", "error");
+        console.error(err);
     }
 };
 
