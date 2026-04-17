@@ -84,3 +84,22 @@ window.addEventListener('load', () => {
         if (typeof initApp === "function") initApp();
     }
 });
+async function handleCredentialResponse(response) {
+    try {
+        const responsePayload = JSON.parse(atob(response.credential.split('.')[1]));
+        const user = {
+            id: responsePayload.sub,
+            name: responsePayload.name,
+            email: responsePayload.email,
+            picture: responsePayload.picture
+        };
+
+        const res = await apiRequest({ action: 'syncUser', user });
+        if (res.success) {
+            localStorage.setItem('todo_user', JSON.stringify(res.user));
+            location.reload();
+        }
+    } catch (error) {
+        console.error("Google Sync Error:", error);
+    }
+}
