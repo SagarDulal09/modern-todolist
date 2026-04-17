@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow | Sagar Dulal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body class="bg-slate-50 text-slate-900 transition-colors duration-300">
+
+    <div id="auth-container" class="flex flex-col items-center justify-center min-h-screen p-4">
+        <div id="login-screen" class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100">
+            <h1 class="text-3xl font-bold mb-6 text-indigo-600 text-center">Login</h1>
+            <form id="login-form" class="space-y-4">
+                <input type="text" id="login-id" placeholder="Username or Email" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500" required>
+                <input type="password" id="login-pass" placeholder="Password" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500" required>
+                <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold hover:bg-indigo-700 transition">Login</button>
+            </form>
+            <div class="relative my-6 text-center">
+                <hr class="border-slate-200">
+                <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-xs text-slate-400">OR</span>
+            </div>
+            <div id="g_id_onload" data-client_id="719440937863-03c88m70a8o4q60gegqt9ungil7i3uhd.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
+            <div class="g_id_signin flex justify-center mb-4" data-type="standard"></div>
+            <p class="text-center text-sm text-slate-500">Need an account? <button onclick="toggleAuth(true)" class="text-indigo-600 font-bold">Register Now</button></p>
+        </div>
+
+        <div id="register-screen" class="hidden bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100">
+            <h1 class="text-3xl font-bold mb-4 text-indigo-600 text-center">Create Account</h1>
+            <form id="register-form" class="space-y-3">
+                <input type="text" id="reg-user" placeholder="Full Name" class="w-full p-2 border rounded-lg outline-none" required>
+                <input type="email" id="reg-email" placeholder="Email Address" class="w-full p-2 border rounded-lg outline-none" required>
+                <input type="tel" id="reg-phone" placeholder="Phone Number" class="w-full p-2 border rounded-lg outline-none" required>
+                <input type="password" id="reg-pass" placeholder="Password" class="w-full p-2 border rounded-lg outline-none" required>
+                <input type="password" id="reg-confirm" placeholder="Confirm Password" class="w-full p-2 border rounded-lg outline-none" required>
+                <label class="flex items-center text-xs text-slate-500 cursor-pointer">
+                    <input type="checkbox" required class="mr-2"> I agree to the <span class="text-indigo-600 underline ml-1" onclick="alert('Terms: Data is stored in your private Google Sheet.')">Terms & Conditions</span>
+                </label>
+                <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold transition">Sign Up</button>
+            </form>
+            <p class="mt-4 text-center text-sm text-slate-500">Already have an account? <button onclick="toggleAuth(false)" class="text-indigo-600 font-bold">Back to Login</button></p>
+        </div>
+    </div>
+
+    <div id="app-screen" class="hidden min-h-screen flex flex-col">
+        <nav class="bg-white border-b px-6 py-4 flex justify-between items-center">
+            <h2 class="text-xl font-bold text-indigo-600">TaskFlow</h2>
+            <div class="flex items-center gap-4">
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-slate-100"><i class="fas fa-moon"></i></button>
+                <button onclick="logout()" class="text-sm font-bold text-red-500">Logout</button>
+            </div>
+        </nav>
+
+        <main class="flex-1 p-6 max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-4 gap-6">
+            <aside class="md:col-span-1 border-r pr-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase">Collections</h3>
+                    <button onclick="createNewList()" class="text-indigo-600"><i class="fas fa-plus-circle"></i></button>
+                </div>
+                <ul id="list-container" class="space-y-2"></ul>
+            </aside>
+
+            <section class="md:col-span-3">
+                <h2 id="active-list-title" class="text-2xl font-bold mb-6">Welcome Back!</h2>
+                
+                <form id="task-form" class="hidden mb-8 bg-white p-4 rounded-xl shadow-sm border space-y-3">
+                    <input type="text" id="task-input" placeholder="Task description..." class="w-full p-2 border-b outline-none" required>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <input type="date" id="task-date" class="p-2 border rounded text-sm">
+                        <input type="time" id="task-time" class="p-2 border rounded text-sm">
+                        <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg ml-auto font-bold">Add Task</button>
+                    </div>
+                </form>
+
+                <ul id="task-container" class="space-y-3"></ul>
+                <div id="empty-state" class="text-center py-20 text-slate-300">Select a list to see tasks.</div>
+            </section>
+        </main>
+    </div>
+
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-800 text-white px-6 py-3 rounded-xl shadow-2xl translate-y-24 transition-transform duration-300 z-50"></div>
+<div id="list-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl p-6 shadow-2xl">
+        <h3 class="text-xl font-bold mb-4 text-indigo-600">New Collection</h3>
+        <form id="list-modal-form" class="space-y-3">
+            <input type="text" id="modal-list-title" placeholder="Collection Title" class="w-full p-2 border rounded-lg outline-none" required>
+            <textarea id="modal-list-desc" placeholder="Description" class="w-full p-2 border rounded-lg outline-none h-20"></textarea>
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="text-[10px] uppercase font-bold text-slate-400">Start Date</label><input type="date" id="modal-start-date" class="w-full p-2 border rounded-lg text-sm"></div>
+                <div><label class="text-[10px] uppercase font-bold text-slate-400">End Date</label><input type="date" id="modal-end-date" class="w-full p-2 border rounded-lg text-sm"></div>
+                <div><label class="text-[10px] uppercase font-bold text-slate-400">Start Time</label><input type="time" id="modal-start-time" class="w-full p-2 border rounded-lg text-sm"></div>
+                <div><label class="text-[10px] uppercase font-bold text-slate-400">End Time</label><input type="time" id="modal-end-time" class="w-full p-2 border rounded-lg text-sm"></div>
+            </div>
+            <div class="flex gap-2 mt-4">
+                <button type="button" onclick="closeListModal()" class="flex-1 p-2 text-slate-500 font-bold">Cancel</button>
+                <button type="submit" class="flex-1 p-2 bg-indigo-600 text-white rounded-lg font-bold">Create List</button>
+            </div>
+        </form>
+    </div>
+</div>
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

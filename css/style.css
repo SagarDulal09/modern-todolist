@@ -1,0 +1,145 @@
+/* Custom Styles for Modern Todo App 
+  Author: Sagar Dulal
+*/
+
+:root {
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-light: #f8fafc;
+    --bg-dark: #0f172a;
+    --card-light: #ffffff;
+    --card-dark: #1e293b;
+    --text-light: #1e293b;
+    --text-dark: #f1f5f9;
+}
+
+/* Base Smooth Transitions */
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slide-in {
+    animation: slideIn 0.3s ease forwards;
+}
+
+/* Checkbox Customization */
+input[type="checkbox"] {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+input[type="checkbox"]:active {
+    transform: scale(1.2);
+}
+
+/* Sidebar Item Hover */
+#list-container li {
+    transition: all 0.2s ease;
+}
+
+#list-container li:hover {
+    padding-left: 12px;
+}
+
+/* Dark Mode Classes */
+body.dark-mode {
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+}
+
+body.dark-mode nav,
+body.dark-mode footer,
+body.dark-mode aside {
+    background-color: var(--card-dark);
+    border-color: #334155;
+}
+
+body.dark-mode .bg-white {
+    background-color: var(--card-dark) !important;
+    color: var(--text-dark);
+}
+
+body.dark-mode input {
+    background-color: #334155;
+    border-color: #475569;
+    color: white;
+}
+
+body.dark-mode .hover\:bg-slate-100:hover {
+    background-color: #334155;
+}
+
+body.dark-mode #active-list-title {
+    color: #818cf8;
+}
+
+/* Toast Styling Enhancements */
+#toast {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    min-width: 200px;
+    text-align: center;
+}
+
+/* Empty State Illustration Filter (Makes icons look better in dark mode) */
+body.dark-mode #empty-state i {
+    color: #475569;
+}
+
+/* Task Hover Effects */
+#task-container li {
+    border: 1px solid transparent;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+#task-container li:hover {
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode #task-container li:hover {
+    border-color: #475569;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 768px) {
+    aside {
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+body.dark-mode { background-color: #0f172a !important; color: white; }
+body.dark-mode .bg-white { background-color: #1e293b !important; color: white; border-color: #334155; }
