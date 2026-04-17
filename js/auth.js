@@ -81,3 +81,13 @@ function logout() {
     localStorage.removeItem('todo_user');
     location.reload();
 }
+// Check if user is already logged in when the page loads
+window.addEventListener('load', () => {
+    const savedUser = localStorage.getItem('todo_user');
+    if (savedUser) {
+        // User is logged in, skip login screen
+        document.getElementById('auth-container').classList.add('hidden');
+        document.getElementById('app-screen').classList.remove('hidden');
+        if (typeof initApp === "function") initApp();
+    }
+});
