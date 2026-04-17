@@ -6,12 +6,11 @@ function toggleAuth(showRegister) {
 // Handle Registration
 document.getElementById('register-form').onsubmit = async (e) => {
     e.preventDefault();
+    
+    // Check passwords match
     const pass = document.getElementById('reg-pass').value;
     const confirm = document.getElementById('reg-confirm').value;
-
-    if (pass !== confirm) {
-        return showToast("Passwords do not match", "error");
-    }
+    if (pass !== confirm) return showToast("Passwords do not match", "error");
 
     const user = {
         name: document.getElementById('reg-user').value,
@@ -21,13 +20,20 @@ document.getElementById('register-form').onsubmit = async (e) => {
         id: "U" + Date.now()
     };
 
-    showToast("Creating account...");
-    const res = await apiRequest({ action: 'registerUser', user });
-    if (res.success) {
-        showToast("Success! Please login.");
-        toggleAuth(false);
-    } else {
-        showToast("Registration failed.", "error");
+    showToast("Attempting Registration...");
+    
+    try {
+        const res = await apiRequest({ action: 'registerUser', user });
+        
+        if (res.success) {
+            showToast("Registration Success! Please Login.");
+            toggleAuth(false);
+        } else {
+            // This will show the ACTUAL error from Google Sheets
+            alert("Registration Failed: " + (res.message || res.error || "Unknown Error"));
+        }
+    } catch (err) {
+        alert("Network Error: " + err.message);
     }
 };
 
