@@ -3,7 +3,34 @@
 */
 
 // 1. GLOBAL STATE & THEME
+// Initialize Theme on Load
 const themeBtn = document.getElementById('theme-toggle');
+
+function applyTheme() {
+    const isDark = localStorage.getItem('theme') === 'dark';
+    if (isDark) {
+        document.body.classList.add('dark-mode');
+        if (themeBtn) themeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+        document.body.classList.remove('dark-mode');
+        if (themeBtn) themeBtn.innerHTML = '<i class="fas fa-moon"></i>';
+    }
+}
+
+if (themeBtn) {
+    themeBtn.onclick = () => {
+        const isCurrentlyDark = document.body.classList.contains('dark-mode');
+        if (isCurrentlyDark) {
+            localStorage.setItem('theme', 'light');
+        } else {
+            localStorage.setItem('theme', 'dark');
+        }
+        applyTheme();
+    };
+}
+
+// Run immediately
+applyTheme();
 
 // Initialize App on Load
 function initApp() {
@@ -68,7 +95,8 @@ document.getElementById('list-modal-form').onsubmit = async (e) => {
     e.preventDefault();
     const user = JSON.parse(localStorage.getItem('todo_user'));
     
-    const listData = {
+    // Extracting values from your new Modal fields
+    const payload = {
         action: 'addList',
         userId: user.id,
         title: document.getElementById('modal-list-title').value,
@@ -78,6 +106,21 @@ document.getElementById('list-modal-form').onsubmit = async (e) => {
         startTime: document.getElementById('modal-start-time').value,
         endTime: document.getElementById('modal-end-time').value
     };
+
+    showToast("Creating collection...");
+    try {
+        const res = await apiRequest(payload);
+        if (res.success) {
+            showToast("List Created!");
+            closeListModal(); // Hide the modal
+            loadLists();      // Refresh the sidebar
+        } else {
+            showToast("Error: " + res.error, "error");
+        }
+    } catch (err) {
+        showToast("Request failed", "error");
+    }
+};
 
    
 };
@@ -186,13 +229,7 @@ showToast("Saving task...");
         dueDate: date,
         dueTime: time
     });
- showToast("Creating collection...");
-    const res = await apiRequest(listData);
-    if (res.success) {
-        showToast("List Created Successfully!");
-        closeListModal();
-        loadLists();
-    }
+
 // Start everything
 initApp();
 // Add this to the very bottom of js/app.js
