@@ -141,5 +141,27 @@ body.dark-mode #task-container li:hover {
         margin-bottom: 1rem;
     }
 }
-body.dark-mode { background-color: #0f172a !important; color: white; }
-body.dark-mode .bg-white { background-color: #1e293b !important; color: white; border-color: #334155; }
+/* Dark Mode Colors */
+body.dark-mode {
+    background-color: #0f172a !important; /* Deep Navy */
+    color: #f1f5f9 !important;
+}
+
+body.dark-mode .bg-white {
+    background-color: #1e293b !important; /* Slate 800 */
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
+}
+
+body.dark-mode input, 
+body.dark-mode textarea, 
+body.dark-mode select {
+    background-color: #334155 !important;
+    color: white !important;
+    border-color: #475569 !important;
+}
+
+body.dark-mode nav {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+}
