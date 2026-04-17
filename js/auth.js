@@ -41,40 +41,33 @@ document.getElementById('register-form').onsubmit = async (e) => {
 // Handle Login
 document.getElementById('login-form').onsubmit = async (e) => {
     e.preventDefault();
-    
     const loginId = document.getElementById('login-id').value;
     const loginPass = document.getElementById('login-pass').value;
 
-    showToast("Authenticating...");
+    if (typeof showToast === "function") showToast("Authenticating...");
 
     try {
-        // We send 'loginUser' action to the script
         const res = await apiRequest({ 
             action: 'loginUser', 
             loginId: loginId, 
             loginPass: loginPass 
         });
 
-if (res.success) {
-    showToast("Login Successful!");
-    localStorage.setItem('todo_user', JSON.stringify(res.user));
-    
-    // HIDE the whole auth wrapper, not just the inner screens
-    document.getElementById('auth-container').classList.add('hidden'); 
-    
-    // SHOW the dashboard
-    document.getElementById('app-screen').classList.remove('hidden');
-    
-    if (typeof initApp === "function") initApp();
-}
+        if (res.success) {
+            localStorage.setItem('todo_user', JSON.stringify(res.user));
             
+            // HIDE AUTH, SHOW APP
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('app-screen').classList.remove('hidden');
+            
+            if (typeof initApp === "function") initApp();
         } else {
-            showToast(res.message || "Invalid Email or Password", "error");
+            if (typeof showToast === "function") showToast(res.message || "Login Failed", "error");
         }
     } catch (err) {
-        showToast("Connection error. Try again.", "error");
-        console.error(err);
-    }
+        console.error("Login Error:", err);
+        if (typeof showToast === "function") showToast("Server Error", "error");
+    } // THIS CLOSES THE TRY/CATCH PROPERLY
 };
 
 function logout() {
