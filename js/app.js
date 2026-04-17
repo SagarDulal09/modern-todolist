@@ -79,13 +79,7 @@ document.getElementById('list-modal-form').onsubmit = async (e) => {
         endTime: document.getElementById('modal-end-time').value
     };
 
-    showToast("Creating collection...");
-    const res = await apiRequest(listData);
-    if (res.success) {
-        showToast("List Created Successfully!");
-        closeListModal();
-        loadLists();
-    }
+   
 };
 
 // Update your sidebar button in HTML to: 
@@ -123,15 +117,7 @@ document.getElementById('task-form').onsubmit = async (e) => {
     const date = document.getElementById('task-date').value;
     const time = document.getElementById('task-time').value;
 
-    showToast("Saving task...");
-    const res = await apiRequest({
-        action: 'addTask',
-        listId: currentListId,
-        text: text,
-        status: 'Pending',
-        dueDate: date,
-        dueTime: time
-    });
+    
 
     if (res.success) {
         document.getElementById('task-form').reset();
@@ -191,7 +177,22 @@ function showToast(msg, type = 'success') {
     toast.style.transform = 'translateY(0)';
     setTimeout(() => { toast.style.transform = 'translateY(100px)'; }, 3000);
 }
-
+showToast("Saving task...");
+    const res = await apiRequest({
+        action: 'addTask',
+        listId: currentListId,
+        text: text,
+        status: 'Pending',
+        dueDate: date,
+        dueTime: time
+    });
+ showToast("Creating collection...");
+    const res = await apiRequest(listData);
+    if (res.success) {
+        showToast("List Created Successfully!");
+        closeListModal();
+        loadLists();
+    }
 // Start everything
 initApp();
 // Add this to the very bottom of js/app.js
