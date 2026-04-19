@@ -1,272 +1,252 @@
 /**
- * TASKFLOW PRO CORE ENGINE
- * Developed by Sagar Dulal | © 2026
- * Featuring: Dual-Session Tracking, Trash Reason Logic, & Neon Theme Sync
+ * TASKFLOW PRO - MASTER APPLICATION LOGIC
+ * Architected by Sagar Dulal | © 2026
+ * Features: Network-Aware Loading, Multi-Device Sync, Relational Data Mapping
  */
 
 /* ============================================================
-   1. APP INITIALIZATION & PRELOADER
+   1. GLOBAL STATE & INITIALIZATION
    ============================================================ */
+let currentUser = JSON.parse(localStorage.getItem('todo_user')) || null;
+let activeListId = null;
+
+// Initialize System on Load
 window.addEventListener('load', () => {
-    let perc = 0;
-    const progress = document.getElementById('loader-progress');
-    const text = document.getElementById('loader-perc');
-    const preloader = document.getElementById('preloader');
-    
-    const interval = setInterval(() => {
-        perc += Math.floor(Math.random() * 12) + 3;
-        if (perc >= 100) {
-            perc = 100;
-            clearInterval(interval);
-            setTimeout(() => {
-                preloader.style.opacity = '0';
-                setTimeout(() => {
-                    preloader.classList.add('hidden');
-                    checkAuthSession();
-                }, 500);
-            }, 500);
-        }
-        if(progress) progress.style.width = perc + '%';
-        if(text) text.innerText = perc + '%';
-    }, 50);
+    initializeEnvironment();
 });
 
-function initApp() {
-    applyTheme();
-    loadLists();
-    updateUserUI();
+/**
+ * High-End Network-Aware Preloader
+ * Adjusts animation duration based on effective connection type
+ */
+function initializeEnvironment() {
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    let latencyBuffer = 50; // Standard speed
+
+    if (conn) {
+        const type = conn.effectiveType; // '4g', '3g', etc.
+        document.getElementById('network-speed').innerText = `NODE: ${type.toUpperCase()} STABLE`;
+        if (type === '4g') latencyBuffer = 20;
+        if (type === '3g' || type === '2g') latencyBuffer = 100;
+    }
+
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        progress += Math.floor(Math.random() * 8) + 2;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(progressInterval);
+            finalizeBoot();
+        }
+        document.getElementById('loader-progress').style.width = `${progress}%`;
+        document.getElementById('loader-perc').innerText = `${progress}%`;
+    }, latencyBuffer);
 }
 
-function updateUserUI() {
-    const user = JSON.parse(localStorage.getItem('todo_user'));
-    const avatar = document.getElementById('user-avatar');
-    if (user && avatar) avatar.innerText = user.name.charAt(0).toUpperCase();
+function finalizeBoot() {
+    setTimeout(() => {
+        document.getElementById('preloader').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+        
+        // Multi-Device Security Check
+        const currentDevice = navigator.userAgent;
+        const lastDevice = localStorage.getItem('last_known_device');
+        
+        if (currentUser && lastDevice && lastDevice !== currentDevice) {
+            showToast("⚠️ SECURITY ALERT: New device access detected", "warning");
+        }
+        localStorage.setItem('last_known_device', currentDevice);
+
+        // Standard Auth Check (from auth.js)
+        if (typeof checkAuthSession === "function") checkAuthSession();
+    }, 500);
 }
 
 /* ============================================================
-   2. COLLECTION / LIST MANAGEMENT
+   2. CORE APPLICATION HANDLERS
    ============================================================ */
-let currentActiveListId = null;
 
-async function loadLists() {
-    const user = JSON.parse(localStorage.getItem('todo_user'));
-    const container = document.getElementById('lists-container');
-    if (!user || !container) return;
-
-    const res = await apiRequest({ action: 'getLists', userId: user.id });
-    container.innerHTML = "";
-
-    if (res.success && res.data) {
-        res.data.forEach(list => {
-            const div = document.createElement('div');
-            div.className = "group p-4 bg-white/50 dark:bg-slate-800/50 rounded-2xl cursor-pointer hover:bg-indigo-600 transition-all border border-transparent hover:border-indigo-400";
-            div.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <div class="overflow-hidden">
-                        <h4 class="font-bold text-sm truncate dark:text-white group-hover:text-white">${list.list_title}</h4>
-                        <p class="text-[10px] text-slate-400 truncate group-hover:text-indigo-100">${list.description || 'Project Workspace'}</p>
-                    </div>
-                    <i class="fas fa-chevron-right text-[10px] text-indigo-300 group-hover:text-white group-hover:translate-x-1 transition-all"></i>
-                </div>
-            `;
-            div.onclick = () => selectList(list.list_id, list.list_title);
-            container.appendChild(div);
-        });
+/**
+ * Boots the main dashboard data
+ */
+async function initApp() {
+    if (!currentUser) return;
+    
+    // UI Personalization
+    document.getElementById('user-name-display').innerText = currentUser.name;
+    document.getElementById('user-avatar').innerText = currentUser.name.charAt(0).toUpperCase();
+    
+    await loadUserLists();
+    
+    // Theme Restoration
+    const savedTheme = localStorage.getItem('tf_theme') || 'light';
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        updateThemeIcon(true);
     }
 }
 
-function selectList(id, title) {
-    currentActiveListId = id;
+/**
+ * Fetches and renders project clusters (Lists)
+ */
+async function loadUserLists() {
+    const res = await apiRequest({ action: 'getLists', userId: currentUser.id });
+    const container = document.getElementById('lists-container');
+    container.innerHTML = '';
+
+    if (res.success && res.data.length > 0) {
+        res.data.forEach((list, index) => {
+            const btn = document.createElement('button');
+            btn.className = `w-full flex items-center gap-4 p-4 rounded-2xl transition-all group ${activeListId === list.list_id ? 'bg-indigo-600 text-white shadow-lg' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500'}`;
+            btn.onclick = () => selectList(list.list_id, list.list_title);
+            btn.innerHTML = `
+                <i class="fas fa-folder text-sm ${activeListId === list.list_id ? 'text-indigo-200' : 'text-slate-400'}"></i>
+                <span class="text-xs font-black uppercase tracking-widest">${list.list_title}</span>
+            `;
+            container.appendChild(btn);
+            
+            // Auto-select first list on boot
+            if (!activeListId && index === 0) selectList(list.list_id, list.list_title);
+        });
+    } else {
+        container.innerHTML = `<p class="text-[10px] text-center text-slate-400 p-4">No active clusters found.</p>`;
+    }
+}
+
+async function selectList(id, title) {
+    activeListId = id;
     document.getElementById('active-list-title').innerText = title;
     document.getElementById('task-input-section').classList.remove('hidden');
+    
+    // Refresh list styling
+    loadUserLists();
     loadTasks();
 }
 
 /* ============================================================
-   3. TASK OPERATIONS (THE CORE)
+   3. TASK OPERATIONS (THE ENGINE)
    ============================================================ */
 
-async function loadTasks() {
-    const container = document.getElementById('tasks-container');
-    if (!currentActiveListId) return;
-
-    container.innerHTML = `<div class="py-20 text-center animate-pulse"><i class="fas fa-circle-notch fa-spin text-indigo-500 text-3xl mb-4"></i><p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Accessing Database...</p></div>`;
-    
-    const res = await apiRequest({ action: 'getTasks', listId: currentActiveListId });
-    container.innerHTML = "";
-
-    if (res.success && res.data.length > 0) {
-        res.data.forEach(task => {
-            const statusClass = task.status.toLowerCase().replace(/\s+/g, '-');
-            const card = document.createElement('div');
-            card.className = "glass-card p-6 mb-4 animate-slide-up flex flex-col md:flex-row md:items-center gap-6 group hover:border-indigo-500 transition-all";
-            
-            card.innerHTML = `
-                <div class="flex-1">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="status-pill status-${statusClass}">${task.status}</span>
-                        <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onclick="editTaskStatus('${task.task_id}', '${task.status}')" class="w-8 h-8 rounded-full bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center hover:scale-110 transition"><i class="fas fa-pen-nib text-[10px]"></i></button>
-                            <button onclick="openTrashModal('${task.task_id}')" class="w-8 h-8 rounded-full bg-red-50 dark:bg-red-900/20 text-red-500 flex items-center justify-center hover:scale-110 transition"><i class="fas fa-trash-alt text-[10px]"></i></button>
-                        </div>
-                    </div>
-                    <h3 class="font-bold text-lg text-slate-800 dark:text-white mb-3">${task.task_text}</h3>
-                    <div class="flex flex-wrap gap-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                        <span class="flex items-center gap-2"><i class="far fa-calendar-check text-indigo-500"></i> ${task.due_date}</span>
-                        <span class="flex items-center gap-2"><i class="far fa-clock text-indigo-500"></i> ${task.start1} - ${task.end1}</span>
-                        ${task.start2 ? `<span class="flex items-center gap-2"><i class="fas fa-history text-purple-500"></i> ${task.start2} - ${task.end2}</span>` : ''}
-                    </div>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-    } else {
-        container.innerHTML = `<div class="text-center py-20 border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-[3rem]"><p class="text-slate-400 font-bold uppercase tracking-widest text-xs">No Active Tasks In This Collection</p></div>`;
-    }
-}
-
-// Create New Task
 document.getElementById('task-form').onsubmit = async (e) => {
     e.preventDefault();
-    APILoader.show();
+    if (!activeListId) return showToast("Select a project cluster first.");
 
-    const payload = {
+    const taskData = {
         action: 'addTask',
-        listId: currentActiveListId,
+        listId: activeListId,
         text: document.getElementById('task-input').value,
         status: document.getElementById('task-status').value,
         dueDate: document.getElementById('task-date').value,
+        endDate: document.getElementById('task-end-date').value,
         startTime: document.getElementById('task-time-start').value,
         endTime: document.getElementById('task-time-end').value,
         secStart: document.getElementById('task-sec-start').value,
         secEnd: document.getElementById('task-sec-end').value
     };
 
-    const res = await apiRequest(payload);
+    APILoader.show();
+    const res = await apiRequest(taskData);
     if (res.success) {
+        showToast("Mission Objective Deployed");
         e.target.reset();
         loadTasks();
-        showToast("Task Deployed Successfully");
     }
     APILoader.hide();
 };
 
-/* ============================================================
-   4. EDIT & TRASH SYSTEM (WITH REASONS)
-   ============================================================ */
+async function loadTasks() {
+    const container = document.getElementById('tasks-container');
+    container.innerHTML = '<div class="col-span-full shimmer h-32 rounded-[2rem]"></div>';
 
-// Quick Status Update
-async function editTaskStatus(taskId, currentStatus) {
-    const statuses = ["Not Started", "In Progress", "Completed", "Delayed"];
-    const newStatus = prompt(`Update Status (Current: ${currentStatus}):\n${statuses.join(", ")}`);
-    
-    if (newStatus && statuses.includes(newStatus)) {
-        APILoader.show();
-        const res = await apiRequest({ action: 'updateTaskStatus', taskId, status: newStatus });
-        if(res.success) loadTasks();
-        APILoader.hide();
-    } else if (newStatus) {
-        showToast("Invalid Status Option", "error");
-    }
-}
-
-// Trash Workflow
-function openTrashModal(taskId) {
-    document.getElementById('trash-target-id').value = taskId;
-    document.getElementById('trash-modal').classList.remove('hidden');
-}
-
-function closeTrashModal() {
-    document.getElementById('trash-modal').classList.add('hidden');
-    document.getElementById('trash-form').reset();
-    document.getElementById('other-reason-container').classList.add('hidden');
-}
-
-document.getElementById('trash-form').onsubmit = async (e) => {
-    e.preventDefault();
-    const taskId = document.getElementById('trash-target-id').value;
-    const selectReason = document.getElementById('trash-reason').value;
-    const customReason = document.getElementById('trash-reason-other').value;
-    
-    const finalReason = selectReason === 'other' ? `Other: ${customReason}` : selectReason;
-
-    if (selectReason === 'other' && !customReason.trim()) {
-        showToast("Please specify the custom reason.");
-        return;
-    }
-
-    APILoader.show();
-    const res = await apiRequest({ 
-        action: 'deleteTask', 
-        taskId: taskId, 
-        reason: finalReason 
-    });
+    const res = await apiRequest({ action: 'getTasks', listId: activeListId });
+    container.innerHTML = '';
 
     if (res.success) {
-        closeTrashModal();
-        loadTasks();
-        showToast("Task Archived to Trash");
+        res.data.forEach(task => {
+            const card = document.createElement('div');
+            card.className = 'task-card animate-slide-up group';
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-6">
+                    <span class="status-pill status-${task.status.toLowerCase().replace(/\s/g, '-')}">${task.status}</span>
+                    <button onclick="openTrashModal('${task.task_id}')" class="text-slate-300 hover:text-red-500 transition-colors">
+                        <i class="fas fa-archive"></i>
+                    </button>
+                </div>
+                <h4 class="text-lg font-black mb-4 dark:text-white">${task.task_text}</h4>
+                <div class="grid grid-cols-2 gap-4 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    <div class="flex items-center gap-2"><i class="far fa-calendar-check text-indigo-500"></i> Start: ${task.due_date}</div>
+                    <div class="flex items-center gap-2"><i class="far fa-calendar-times text-red-500"></i> End: ${task.end_date || 'N/A'}</div>
+                </div>
+                <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                    <div class="flex gap-4">
+                        <div class="flex flex-col">
+                            <span class="text-[8px] text-slate-400">Primary Slot</span>
+                            <span class="text-[10px] text-indigo-600 font-black">${task.start1 || '--'} to ${task.end1 || '--'}</span>
+                        </div>
+                    </div>
+                    <button onclick="updateTaskStatus('${task.task_id}')" class="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all">
+                        <i class="fas fa-sync-alt text-[10px]"></i>
+                    </button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
     }
-    APILoader.hide();
-};
+}
 
 /* ============================================================
-   5. UI UTILITIES & THEME
+   4. UI UTILITIES (THEME, TOAST, LOGOUT)
    ============================================================ */
 
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    const txt = document.getElementById('toast-text');
-    txt.innerText = msg;
-    t.style.bottom = '40px';
-    setTimeout(() => { t.style.bottom = '-100px'; }, 3000);
-}
-
-function applyTheme() {
-    const isDark = localStorage.getItem('theme') === 'dark';
-    const btn = document.getElementById('theme-toggle');
-    if (isDark) {
-        document.body.classList.add('dark-mode');
-        btn.innerHTML = '<i class="fas fa-sun text-yellow-400"></i>';
-    } else {
-        document.body.classList.remove('dark-mode');
-        btn.innerHTML = '<i class="fas fa-moon"></i>';
-    }
-}
-
 document.getElementById('theme-toggle').onclick = () => {
-    const isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
-    applyTheme();
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('tf_theme', isDark ? 'dark' : 'light');
+    updateThemeIcon(isDark);
 };
 
+function updateThemeIcon(isDark) {
+    const icon = document.querySelector('#theme-toggle i');
+    icon.className = isDark ? 'fas fa-sun text-yellow-400 text-xl' : 'fas fa-moon text-indigo-600 text-xl';
+}
+
+function showToast(message, type = "info") {
+    const toast = document.getElementById('toast');
+    const text = document.getElementById('toast-text');
+    text.innerText = message;
+    
+    toast.style.bottom = "40px";
+    setTimeout(() => { toast.style.bottom = "-100px"; }, 4000);
+}
+
 function confirmLogout() {
-    if(confirm("Sagar Dulal says: End this session?")) {
+    if (confirm("Terminate secure session and disconnect?")) {
         localStorage.removeItem('todo_user');
         location.reload();
     }
 }
 
-function openListModal() { document.getElementById('list-modal').classList.remove('hidden'); }
-function closeListModal() { document.getElementById('list-modal').classList.add('hidden'); }
+function openTrashModal(id) {
+    document.getElementById('trash-target-id').value = id;
+    document.getElementById('trash-modal').classList.remove('hidden');
+}
 
-// Collection Creation
-document.getElementById('list-modal-form').onsubmit = async (e) => {
+function closeTrashModal() {
+    document.getElementById('trash-modal').classList.add('hidden');
+}
+
+document.getElementById('trash-form').onsubmit = async (e) => {
     e.preventDefault();
-    const user = JSON.parse(localStorage.getItem('todo_user'));
-    APILoader.show();
-    
-    const res = await apiRequest({
-        action: 'addList',
-        userId: user.id,
-        title: document.getElementById('modal-list-title').value,
-        desc: document.getElementById('modal-list-desc').value
-    });
+    const id = document.getElementById('trash-target-id').value;
+    const reason = document.getElementById('trash-reason').value === 'other' ? 
+                   document.getElementById('trash-reason-other').value : 
+                   document.getElementById('trash-reason').value;
 
+    APILoader.show();
+    const res = await apiRequest({ action: 'deleteTask', taskId: id, reason: reason });
     if (res.success) {
-        closeListModal();
-        loadLists();
-        showToast("Collection Deployed");
+        showToast("Node Relocated to Archive");
+        closeTrashModal();
+        loadTasks();
     }
     APILoader.hide();
 };
