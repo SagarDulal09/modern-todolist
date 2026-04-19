@@ -133,6 +133,76 @@ async function loadLists() {
         container.innerHTML = `<p class="text-center text-slate-400 py-10">No collections found. Click + to start!</p>`;
     }
 }
+async function loadTasks() {
+    if (!currentActiveListId) return;
+
+    const container = document.getElementById('tasks-container');
+    if (!container) return;
+
+    // Show a loading state
+    container.innerHTML = `<p class="text-center text-slate-400">Loading tasks...</p>`;
+
+    try {
+        const res = await apiRequest({ 
+            action: 'getTasks', 
+            listId: currentActiveListId 
+        });
+
+        container.innerHTML = ""; // Clear loading text
+
+        if (res.success && res.data && res.data.length > 0) {
+            res.data.forEach(task => {
+                const item = document.createElement('div');
+                item.className = "flex items-center gap-4 p-4 bg-white dark:bg-slate-800 rounded-xl mb-2 shadow-sm border border-transparent hover:border-indigo-500 transition-all";
+                item.innerHTML = `
+                    <input type="checkbox" ${task.status === 'Completed' ? 'checked' : ''} 
+                           onchange="toggleTaskStatus('${task.task_id}')" 
+                           class="w-5 h-5 rounded border-slate-300 accent-indigo-600">
+                    <div class="flex-1">
+                        <p class="${task.status === 'Completed' ? 'line-through text-slate-400' : 'text-slate-700 dark:text-white font-medium'}">${task.task_text}</p>
+                        <div class="flex gap-3 mt-1">
+                            <span class="text-[10px] text-slate-400"><i class="far fa-calendar-alt mr-1"></i>${task.due_date || 'No Date'}</span>
+                            <span class="text-[10px] text-slate-400"><i class="far fa-clock mr-1"></i>${task.due_time || 'No Time'}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        } else {
+            container.innerHTML = `<p class="text-center text-slate-400 py-10">No tasks in this collection yet. Add one above!</p>`;
+        }
+    } catch (err) {
+        console.error("Failed to load tasks:", err);
+        container.innerHTML = `<p class="text-center text-red-500 py-10">Error loading tasks.</p>`;
+    }
+}
+// 1. First, define this variable at the very top of app.js (outside any functions)
+let currentActiveListId = null;
+
+// 2. Add the selectList function below
+async function selectList(id, title) {
+    console.log("Switching to list:", id); // Helpful for debugging
+    currentActiveListId = id;
+    
+    // Update the Header Title
+    const titleElement = document.getElementById('active-list-title');
+    if (titleElement) {
+        titleElement.innerText = title;
+    }
+    
+    // Reveal the Task Input form
+    const inputSection = document.getElementById('task-input-section');
+    if (inputSection) {
+        inputSection.classList.remove('hidden');
+    }
+    
+    // Fetch and show the tasks for this specific list
+    if (typeof loadTasks === "function") {
+        loadTasks();
+    } else {
+        console.error("loadTasks function is missing!");
+    }
+}
 /* --- TOAST LOGIC --- */
 function showToast(msg, type = 'success') {
     const toast = document.getElementById('toast');
