@@ -6,7 +6,7 @@
 
 // 1. CONFIGURATION - SAGAR: PASTE YOUR DEPLOYED WEB APP URL HERE
 const API_CONFIG = {
-    URL: "YOUR_GOOGLE_SCRIPT_WEB_APP_URL", // Update this after deploying Code.gs
+    URL: "https://script.google.com/macros/s/AKfycbxBnJA-bySZumgVenlMExqcVZUsUSdo3Efxywx_lHL6pFeNXQ6Uxg4bUz2fwKYw9ohJaw/exec", // Update this after deploying Code.gs
     TIMEOUT: 15000,
     VERSION: "2.1.0-Enterprise"
 };
