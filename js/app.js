@@ -90,48 +90,37 @@ async function loadLists() {
     const user = JSON.parse(localStorage.getItem('todo_user'));
     if (!user) return;
 
-    // Fetch lists for THIS specific user
+    // 1. Get container from HTML
+    const container = document.getElementById('lists-container');
+    if (!container) return;
+
+    // 2. Fetch from Apps Script
     const res = await apiRequest({ action: 'getLists', userId: user.id });
     
-    const container = document.getElementById('lists-container'); // Ensure this ID exists in your HTML
-    if (!container) return;
-    
-    container.innerHTML = ""; // Clear old lists
+    container.innerHTML = ""; // Clear current view
 
-    if (res.success && res.data) {
+    if (res.success && res.data && res.data.length > 0) {
         res.data.forEach(list => {
             const div = document.createElement('div');
-            div.className = "p-3 mb-2 bg-slate-100 dark:bg-slate-800 rounded-lg cursor-pointer hover:bg-indigo-100 transition";
-            div.innerHTML = `<h4 class="font-bold">${list.title}</h4><p class="text-xs text-slate-500">${list.description}</p>`;
-            div.onclick = () => selectList(list.id, list.title);
+            div.className = "group flex items-center justify-between p-4 mb-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-transparent hover:border-indigo-500 cursor-pointer transition-all";
+            
+            // This builds the HTML for each list card
+            div.innerHTML = `
+                <div>
+                    <h4 class="font-bold text-slate-800 dark:text-white">${list.list_title}</h4>
+                    <p class="text-xs text-slate-500">${list.description || 'No description'}</p>
+                </div>
+                <i class="fas fa-chevron-right text-slate-300 group-hover:text-indigo-500"></i>
+            `;
+            
+            // When clicked, show this list's tasks
+            div.onclick = () => selectList(list.list_id, list.list_title);
             container.appendChild(div);
         });
+    } else {
+        container.innerHTML = `<p class="text-center text-slate-400 py-10">No collections found. Click + to start!</p>`;
     }
 }
-
-// Call this immediately after a successful add
-document.getElementById('list-modal-form').onsubmit = async (e) => {
-    e.preventDefault();
-    const user = JSON.parse(localStorage.getItem('todo_user'));
-    
-    const payload = {
-        action: 'addList',
-        userId: user.id,
-        title: document.getElementById('modal-list-title').value,
-        description: document.getElementById('modal-list-desc').value,
-        startDate: document.getElementById('modal-start-date').value,
-        endDate: document.getElementById('modal-end-date').value,
-        startTime: document.getElementById('modal-start-time').value,
-        endTime: document.getElementById('modal-end-time').value
-    };
-
-    const res = await apiRequest(payload);
-    if (res.success) {
-        showToast("Collection Created!");
-        closeListModal();
-        loadLists(); // <--- THIS REFRESHES THE PAGE
-    }
-};
 /* --- TOAST LOGIC --- */
 function showToast(msg, type = 'success') {
     const toast = document.getElementById('toast');
