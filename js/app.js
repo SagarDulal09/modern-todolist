@@ -62,28 +62,28 @@ function confirmLogout() {
     });
 }
 
-// --- UPDATED TASK SUBMISSION (Fixes Database Display) ---
 document.getElementById('task-form').onsubmit = async (e) => {
     e.preventDefault();
     
+    // This object matches your 6 Tasks columns
     const payload = {
         action: 'addTask',
-        listId: currentListId, // Global variable from when you clicked a list
+        listId: currentListId, 
         text: document.getElementById('task-input').value,
-        status: 'Pending',
+        status: 'Pending', // Default status for new tasks
         dueDate: document.getElementById('task-date').value,
         dueTime: document.getElementById('task-time').value
     };
 
-    showToast("Syncing with database...");
+    showToast("Saving task...");
     
     const res = await apiRequest(payload);
     if (res.success) {
-        showToast("Task saved!");
+        showToast("Task Added!");
         document.getElementById('task-form').reset();
-        loadTasks(); // This refreshes the web view immediately
+        loadTasks(); // Refresh the UI list
     } else {
-        showToast("Database Error", "error");
+        showToast("Error saving task", "error");
     }
 };
 
