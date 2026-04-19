@@ -12,7 +12,31 @@
     --text-light: #1e293b;
     --text-dark: #f1f5f9;
 }
+/* =========================================
+   1. UTILITY CLASSES (Add this at the top)
+   ========================================= */
+.hidden { 
+    display: none !important; 
+}
 
+/* =========================================
+   2. DARK MODE THEME
+   ========================================= */
+body.dark-mode {
+    background-color: #0f172a;
+    color: #f1f5f9;
+}
+
+body.dark-mode .bg-white {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
+}
+
+/* =========================================
+   3. CUSTOM STYLES
+   ========================================= */
+/* Your existing custom styling for buttons, cards, etc. */
 /* Base Smooth Transitions */
 body {
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -140,28 +164,4 @@ body.dark-mode #task-container li:hover {
         padding-bottom: 1rem;
         margin-bottom: 1rem;
     }
-}
-/* Dark Mode Colors */
-body.dark-mode {
-    background-color: #0f172a !important; /* Deep Navy */
-    color: #f1f5f9 !important;
-}
-
-body.dark-mode .bg-white {
-    background-color: #1e293b !important; /* Slate 800 */
-    color: #f1f5f9 !important;
-    border-color: #334155 !important;
-}
-
-body.dark-mode input, 
-body.dark-mode textarea, 
-body.dark-mode select {
-    background-color: #334155 !important;
-    color: white !important;
-    border-color: #475569 !important;
-}
-
-body.dark-mode nav {
-    background-color: #0f172a !important;
-    border-color: #1e293b !important;
 }
