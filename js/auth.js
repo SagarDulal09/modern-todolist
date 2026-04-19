@@ -59,14 +59,11 @@ async function requestOTP() {
  */
 async function verifyAndRegister() {
     const otp = document.getElementById('reg-otp').value.trim();
-    const name = document.getElementById('reg-user').value.trim();
     const email = document.getElementById('reg-email').value.trim();
-    const phone = document.getElementById('reg-phone').value.trim();
-    const pass = document.getElementById('reg-pass').value.trim();
 
-    if (otp.length !== 6) return showToast("Enter the full 6-digit sequence");
-
-    // Phase 1: Verify Token
+    APILoader.show();
+    
+    // Explicitly sending email and otp for verification
     const verifyRes = await apiRequest({ 
         action: 'validateOTP', 
         email: email, 
@@ -74,31 +71,25 @@ async function verifyAndRegister() {
     });
 
     if (verifyRes.success) {
-        // Phase 2: Create User Profile
+        // Continue to registration...
+        const name = document.getElementById('reg-user').value.trim();
+        const phone = document.getElementById('reg-phone').value.trim();
+        const pass = document.getElementById('reg-pass').value.trim();
+
         const regRes = await apiRequest({ 
             action: 'registerUser', 
-            name: name, 
-            email: email, 
-            phone: phone, 
-            pass: pass 
+            name, email, phone, pass 
         });
 
         if (regRes.success) {
-            localStorage.setItem('todo_user', JSON.stringify({ 
-                id: regRes.userId, 
-                name: name, 
-                email: email 
-            }));
-            showToast("Identity Verified. Initializing...");
-            setTimeout(() => location.reload(), 1500);
-        } else {
-            showToast(regRes.message);
+            localStorage.setItem('todo_user', JSON.stringify({ id: regRes.userId, name, email }));
+            location.reload();
         }
     } else {
-        showToast(verifyRes.message || "Token Authorization Failed");
+        APILoader.hide();
+        showToast(verifyRes.message);
     }
 }
-
 // --- 3. LOGIN & ACCESS CONTROL ---
 
 document.getElementById('login-form').onsubmit = async (e) => {
