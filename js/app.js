@@ -1,44 +1,46 @@
+/**
+ * TASKFLOW PRO CORE ENGINE
+ * Developed by Sagar Dulal | © 2026
+ * Featuring: Dual-Session Tracking, Trash Reason Logic, & Neon Theme Sync
+ */
+
 /* ============================================================
-   1. PRELOADER & INITIALIZATION
+   1. APP INITIALIZATION & PRELOADER
    ============================================================ */
 window.addEventListener('load', () => {
     let perc = 0;
-    const bar = document.getElementById('loader-progress');
+    const progress = document.getElementById('loader-progress');
     const text = document.getElementById('loader-perc');
     const preloader = document.getElementById('preloader');
     
-    // Smooth loading animation sync
     const interval = setInterval(() => {
-        // Random increments to look like a real process
-        perc += Math.floor(Math.random() * 15) + 2;
-        
+        perc += Math.floor(Math.random() * 12) + 3;
         if (perc >= 100) {
             perc = 100;
             clearInterval(interval);
             setTimeout(() => {
                 preloader.style.opacity = '0';
-                setTimeout(() => preloader.classList.add('hidden'), 500);
-                checkSession();
-            }, 400);
+                setTimeout(() => {
+                    preloader.classList.add('hidden');
+                    checkAuthSession();
+                }, 500);
+            }, 500);
         }
-        
-        if(bar) bar.style.width = perc + '%';
+        if(progress) progress.style.width = perc + '%';
         if(text) text.innerText = perc + '%';
-    }, 60);
+    }, 50);
 });
-
-function checkSession() {
-    const savedUser = localStorage.getItem('todo_user');
-    if (savedUser) {
-        document.getElementById('auth-container').classList.add('hidden');
-        document.getElementById('app-screen').classList.remove('hidden');
-        initApp();
-    }
-}
 
 function initApp() {
     applyTheme();
     loadLists();
+    updateUserUI();
+}
+
+function updateUserUI() {
+    const user = JSON.parse(localStorage.getItem('todo_user'));
+    const avatar = document.getElementById('user-avatar');
+    if (user && avatar) avatar.innerText = user.name.charAt(0).toUpperCase();
 }
 
 /* ============================================================
@@ -57,14 +59,14 @@ async function loadLists() {
     if (res.success && res.data) {
         res.data.forEach(list => {
             const div = document.createElement('div');
-            div.className = "group p-4 bg-white dark:bg-slate-800 rounded-2xl cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all border border-transparent hover:border-indigo-200";
+            div.className = "group p-4 bg-white/50 dark:bg-slate-800/50 rounded-2xl cursor-pointer hover:bg-indigo-600 transition-all border border-transparent hover:border-indigo-400";
             div.innerHTML = `
                 <div class="flex justify-between items-center">
                     <div class="overflow-hidden">
-                        <h4 class="font-bold text-sm truncate dark:text-white">${list.list_title}</h4>
-                        <p class="text-[10px] text-slate-400 truncate">${list.description || 'Quick Collection'}</p>
+                        <h4 class="font-bold text-sm truncate dark:text-white group-hover:text-white">${list.list_title}</h4>
+                        <p class="text-[10px] text-slate-400 truncate group-hover:text-indigo-100">${list.description || 'Project Workspace'}</p>
                     </div>
-                    <i class="fas fa-chevron-right text-[10px] text-indigo-300"></i>
+                    <i class="fas fa-chevron-right text-[10px] text-indigo-300 group-hover:text-white group-hover:translate-x-1 transition-all"></i>
                 </div>
             `;
             div.onclick = () => selectList(list.list_id, list.list_title);
@@ -81,14 +83,14 @@ function selectList(id, title) {
 }
 
 /* ============================================================
-   3. TASK MANAGEMENT (ADVANCED)
+   3. TASK OPERATIONS (THE CORE)
    ============================================================ */
 
 async function loadTasks() {
     const container = document.getElementById('tasks-container');
     if (!currentActiveListId) return;
 
-    container.innerHTML = `<div class="py-20 text-center"><i class="fas fa-circle-notch fa-spin text-indigo-500 text-3xl"></i></div>`;
+    container.innerHTML = `<div class="py-20 text-center animate-pulse"><i class="fas fa-circle-notch fa-spin text-indigo-500 text-3xl mb-4"></i><p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Accessing Database...</p></div>`;
     
     const res = await apiRequest({ action: 'getTasks', listId: currentActiveListId });
     container.innerHTML = "";
@@ -97,34 +99,36 @@ async function loadTasks() {
         res.data.forEach(task => {
             const statusClass = task.status.toLowerCase().replace(/\s+/g, '-');
             const card = document.createElement('div');
-            card.className = "bg-white dark:bg-slate-900 p-6 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center gap-4";
+            card.className = "glass-card p-6 mb-4 animate-slide-up flex flex-col md:flex-row md:items-center gap-6 group hover:border-indigo-500 transition-all";
             
             card.innerHTML = `
                 <div class="flex-1">
-                    <div class="flex justify-between items-start gap-4 mb-3">
-                        <h3 class="font-bold text-slate-800 dark:text-white">${task.task_text}</h3>
+                    <div class="flex justify-between items-start mb-4">
                         <span class="status-pill status-${statusClass}">${task.status}</span>
+                        <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="editTaskStatus('${task.task_id}', '${task.status}')" class="w-8 h-8 rounded-full bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center hover:scale-110 transition"><i class="fas fa-pen-nib text-[10px]"></i></button>
+                            <button onclick="openTrashModal('${task.task_id}')" class="w-8 h-8 rounded-full bg-red-50 dark:bg-red-900/20 text-red-500 flex items-center justify-center hover:scale-110 transition"><i class="fas fa-trash-alt text-[10px]"></i></button>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div class="text-[11px] text-slate-500"><i class="far fa-calendar-alt mr-1 text-indigo-500"></i> ${task.due_date}</div>
-                        <div class="text-[11px] text-slate-500"><i class="far fa-clock mr-1 text-indigo-500"></i> ${task.due_time_start} - ${task.due_time_end}</div>
-                        ${task.sec_time_start ? 
-                          `<div class="text-[11px] text-slate-500"><i class="fas fa-history mr-1 text-purple-500"></i> ${task.sec_time_start} - ${task.sec_time_end}</div>` 
-                          : ''}
+                    <h3 class="font-bold text-lg text-slate-800 dark:text-white mb-3">${task.task_text}</h3>
+                    <div class="flex flex-wrap gap-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        <span class="flex items-center gap-2"><i class="far fa-calendar-check text-indigo-500"></i> ${task.due_date}</span>
+                        <span class="flex items-center gap-2"><i class="far fa-clock text-indigo-500"></i> ${task.start1} - ${task.end1}</span>
+                        ${task.start2 ? `<span class="flex items-center gap-2"><i class="fas fa-history text-purple-500"></i> ${task.start2} - ${task.end2}</span>` : ''}
                     </div>
                 </div>
             `;
             container.appendChild(card);
         });
     } else {
-        container.innerHTML = `<div class="text-center py-20 text-slate-400">No tasks found in this collection.</div>`;
+        container.innerHTML = `<div class="text-center py-20 border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-[3rem]"><p class="text-slate-400 font-bold uppercase tracking-widest text-xs">No Active Tasks In This Collection</p></div>`;
     }
 }
 
+// Create New Task
 document.getElementById('task-form').onsubmit = async (e) => {
     e.preventDefault();
-    const btn = e.target.querySelector('button');
-    btn.disabled = true;
+    APILoader.show();
 
     const payload = {
         action: 'addTask',
@@ -138,30 +142,85 @@ document.getElementById('task-form').onsubmit = async (e) => {
         secEnd: document.getElementById('task-sec-end').value
     };
 
-    showToast("Syncing with Database...");
     const res = await apiRequest(payload);
-    
     if (res.success) {
         e.target.reset();
         loadTasks();
-        showToast("Task Secured Successfully!");
+        showToast("Task Deployed Successfully");
     }
-    btn.disabled = false;
+    APILoader.hide();
 };
 
 /* ============================================================
-   4. UI UTILITIES & BRANDING
+   4. EDIT & TRASH SYSTEM (WITH REASONS)
+   ============================================================ */
+
+// Quick Status Update
+async function editTaskStatus(taskId, currentStatus) {
+    const statuses = ["Not Started", "In Progress", "Completed", "Delayed"];
+    const newStatus = prompt(`Update Status (Current: ${currentStatus}):\n${statuses.join(", ")}`);
+    
+    if (newStatus && statuses.includes(newStatus)) {
+        APILoader.show();
+        const res = await apiRequest({ action: 'updateTaskStatus', taskId, status: newStatus });
+        if(res.success) loadTasks();
+        APILoader.hide();
+    } else if (newStatus) {
+        showToast("Invalid Status Option", "error");
+    }
+}
+
+// Trash Workflow
+function openTrashModal(taskId) {
+    document.getElementById('trash-target-id').value = taskId;
+    document.getElementById('trash-modal').classList.remove('hidden');
+}
+
+function closeTrashModal() {
+    document.getElementById('trash-modal').classList.add('hidden');
+    document.getElementById('trash-form').reset();
+    document.getElementById('other-reason-container').classList.add('hidden');
+}
+
+document.getElementById('trash-form').onsubmit = async (e) => {
+    e.preventDefault();
+    const taskId = document.getElementById('trash-target-id').value;
+    const selectReason = document.getElementById('trash-reason').value;
+    const customReason = document.getElementById('trash-reason-other').value;
+    
+    const finalReason = selectReason === 'other' ? `Other: ${customReason}` : selectReason;
+
+    if (selectReason === 'other' && !customReason.trim()) {
+        showToast("Please specify the custom reason.");
+        return;
+    }
+
+    APILoader.show();
+    const res = await apiRequest({ 
+        action: 'deleteTask', 
+        taskId: taskId, 
+        reason: finalReason 
+    });
+
+    if (res.success) {
+        closeTrashModal();
+        loadTasks();
+        showToast("Task Archived to Trash");
+    }
+    APILoader.hide();
+};
+
+/* ============================================================
+   5. UI UTILITIES & THEME
    ============================================================ */
 
 function showToast(msg) {
     const t = document.getElementById('toast');
-    t.innerText = msg;
-    t.style.bottom = '30px';
+    const txt = document.getElementById('toast-text');
+    txt.innerText = msg;
+    t.style.bottom = '40px';
     setTimeout(() => { t.style.bottom = '-100px'; }, 3000);
 }
-
-function openListModal() { document.getElementById('list-modal').classList.remove('hidden'); }
-function closeListModal() { document.getElementById('list-modal').classList.add('hidden'); }
 
 function applyTheme() {
     const isDark = localStorage.getItem('theme') === 'dark';
@@ -182,11 +241,32 @@ document.getElementById('theme-toggle').onclick = () => {
 };
 
 function confirmLogout() {
-    if(confirm("Sagar Dulal says: Are you sure you want to log out?")) {
+    if(confirm("Sagar Dulal says: End this session?")) {
         localStorage.removeItem('todo_user');
         location.reload();
     }
 }
 
-// Copyright Log for Developer
-console.log("%c © 2026 Sagar Dulal. All Rights Reserved. ", "background: #6366f1; color: #fff; border-radius: 5px;");
+function openListModal() { document.getElementById('list-modal').classList.remove('hidden'); }
+function closeListModal() { document.getElementById('list-modal').classList.add('hidden'); }
+
+// Collection Creation
+document.getElementById('list-modal-form').onsubmit = async (e) => {
+    e.preventDefault();
+    const user = JSON.parse(localStorage.getItem('todo_user'));
+    APILoader.show();
+    
+    const res = await apiRequest({
+        action: 'addList',
+        userId: user.id,
+        title: document.getElementById('modal-list-title').value,
+        desc: document.getElementById('modal-list-desc').value
+    });
+
+    if (res.success) {
+        closeListModal();
+        loadLists();
+        showToast("Collection Deployed");
+    }
+    APILoader.hide();
+};
