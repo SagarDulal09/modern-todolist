@@ -11,6 +11,12 @@
 </head>
 <body class="bg-slate-50 transition-colors duration-300">
 
+    <div id="preloader">
+    <div class="text-2xl font-bold text-indigo-600">TaskFlow</div>
+    <div class="loader-bar"><div id="loader-progress" class="loader-progress"></div></div>
+    <div id="loader-perc" class="mt-2 font-bold text-slate-500 text-sm">0%</div>
+</div>
+    
     <div id="auth-container" class="fixed inset-0 bg-white z-[100] flex items-center justify-center p-4">
         <div class="w-full max-w-md bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
             <h1 class="text-3xl font-bold text-center text-indigo-600 mb-8">TaskFlow</h1>
@@ -90,25 +96,29 @@
             <div class="p-8 flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950">
                 
                 <div id="task-input-section" class="hidden mb-8 max-w-3xl mx-auto">
-                    <form id="task-form" class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm space-y-4 border border-slate-100 dark:border-slate-800">
-                        <input type="text" id="task-input" placeholder="Type a new task..." 
-                               class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl outline-none border border-transparent focus:border-indigo-500 text-lg" required>
-                        <div class="flex flex-wrap gap-4">
-                            <div class="flex-1 min-w-[150px] space-y-1">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Due Date</label>
-                                <input type="date" id="task-date" class="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-sm">
-                            </div>
-                            <div class="flex-1 min-w-[150px] space-y-1">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Time</label>
-                                <input type="time" id="task-time" class="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-sm">
-                            </div>
-                            <div class="flex items-end">
-                                <button type="submit" class="bg-indigo-600 text-white px-10 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition">
-                                    Add Task
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+                    <select id="task-status" class="w-full p-3 rounded-xl border border-slate-200 dark:bg-slate-800">
+    <option value="Not Started">Not Started</option>
+    <option value="In Progress">In Progress</option>
+    <option value="Completed">Completed</option>
+    <option value="Delayed">Delayed</option>
+</select>
+
+<div class="grid grid-cols-2 gap-4">
+    <div class="space-y-1">
+        <label class="text-[10px] font-bold">PRIMARY SESSION</label>
+        <div class="flex gap-2">
+            <input type="time" id="task-time-start" class="flex-1 p-2 rounded-lg border">
+            <input type="time" id="task-time-end" class="flex-1 p-2 rounded-lg border">
+        </div>
+    </div>
+    <div class="space-y-1">
+        <label class="text-[10px] font-bold">SECONDARY SESSION (OPTIONAL)</label>
+        <div class="flex gap-2">
+            <input type="time" id="task-sec-start" class="flex-1 p-2 rounded-lg border">
+            <input type="time" id="task-sec-end" class="flex-1 p-2 rounded-lg border">
+        </div>
+    </div>
+</div>
                 </div>
 
                 <div id="tasks-container" class="max-w-3xl mx-auto space-y-3">
@@ -164,5 +174,18 @@
     <script src="js/api.js"></script>
     <script src="js/app.js"></script>
     <script src="js/auth.js"></script>
+    <div class="mt-auto pt-6 border-t border-slate-100 dark:border-slate-800">
+    <div class="flex justify-center gap-4 mb-4">
+        <a href="https://www.facebook.com/sagardulal09" target="_blank" class="social-icon"><i class="fab fa-facebook"></i></a>
+        <a href="https://www.instagram.com/itsme_sagar9/" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.tiktok.com/@sagardulal09" target="_blank" class="social-icon"><i class="fab fa-tiktok"></i></a>
+        <a href="https://www.threads.com/@itsme_sagar9" target="_blank" class="social-icon"><i class="fab fa-at"></i></a>
+        <a href="https://www.linkedin.com/in/sagardulal09/" target="_blank" class="social-icon"><i class="fab fa-linkedin"></i></a>
+        <a href="https://x.com/SagarDulal09" target="_blank" class="social-icon"><i class="fab fa-x-twitter"></i></a>
+    </div>
+    <p class="text-[9px] text-center text-slate-400 font-bold uppercase tracking-widest">
+        &copy; 2026 Sagar Dulal. All Rights Reserved.
+    </p>
+</div>
 </body>
 </html>
