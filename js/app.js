@@ -2,9 +2,7 @@
    Handles: Dark Mode, Lists, Tasks, and Status Updates
 */
 
-// 1. GLOBAL STATE & THEME
-// Initialize Theme on Load
-const themeBtn = document.getElementById('theme-toggle');
+
 
 // --- THEME TOGGLE LOGIC ---
 function applyTheme() {
