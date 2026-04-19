@@ -3,181 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskFlow | Pro Task Manager by Sagar Dulal</title>
+    <title>TaskFlow Pro | Sagar Dulal Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
-<body class="bg-slate-50 transition-colors duration-300">
+<body class="bg-var-bg text-var-text transition-all duration-500">
 
-    <div id="preloader">
-        <div class="text-3xl font-bold text-indigo-600 mb-2">TaskFlow</div>
-        <div class="text-[10px] tracking-[0.2em] text-slate-400 font-bold uppercase mb-6">Designed by Sagar Dulal</div>
-        <div class="loader-bar">
-            <div id="loader-progress" class="loader-progress"></div>
+    <div id="preloader" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white dark:bg-slate-950">
+        <div class="relative">
+            <div class="text-4xl font-black tracking-tighter text-indigo-600 italic mb-2">TASKFLOW.PRO</div>
+            <div class="absolute -right-8 -top-2 px-2 py-1 bg-indigo-100 text-indigo-600 text-[10px] font-bold rounded-lg">v2.0</div>
         </div>
-        <div id="loader-perc" class="mt-3 font-bold text-slate-500 text-sm">0%</div>
+        <p class="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-bold mb-8">Developed by Sagar Dulal</p>
+        <div class="loader-bar w-64 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="loader-progress" class="h-full bg-indigo-600 shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all duration-100" style="width: 0%"></div>
+        </div>
+        <div id="loader-perc" class="mt-4 font-mono text-indigo-600 font-bold">0%</div>
     </div>
 
-    <div id="auth-container" class="fixed inset-0 bg-white z-[100] flex items-center justify-center p-4">
-        <div class="w-full max-w-md bg-white p-10 rounded-[2.5rem] shadow-2xl border border-slate-100">
-            <div class="text-center mb-8">
-                <h1 class="text-4xl font-black text-indigo-600 italic">TF</h1>
-                <p class="text-slate-500 font-medium">Manage your workflow professionally.</p>
+    <div id="auth-container" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-50 dark:bg-slate-950">
+        <div class="glass-card w-full max-w-lg p-10 md:p-14 text-center">
+            <div class="mb-10">
+                <div class="inline-block p-4 rounded-3xl bg-indigo-600 shadow-xl shadow-indigo-200 dark:shadow-indigo-900/20 mb-6">
+                    <i class="fas fa-layer-group text-3xl text-white"></i>
+                </div>
+                <h1 class="text-3xl font-black text-slate-800 dark:text-white mb-2">Welcome to TaskFlow</h1>
+                <p class="text-slate-500 dark:text-slate-400 font-medium">High-performance task management for professionals.</p>
             </div>
-            
-            <div id="login-screen">
-                <form id="login-form" class="space-y-5">
-                    <input type="text" id="login-id" placeholder="Email or Phone" class="w-full p-4 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500" required>
-                    <input type="password" id="login-pass" placeholder="Password" class="w-full p-4 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500" required>
-                    <button type="submit" class="w-full bg-indigo-600 text-white p-4 rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition">Sign In</button>
+
+            <div id="login-screen" class="space-y-6">
+                <form id="login-form" class="space-y-4 text-left">
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Identifier</label>
+                        <input type="text" id="login-id" placeholder="Email or Phone" class="w-full p-4 mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl outline-none focus:border-indigo-500 transition-all" required>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Password</label>
+                        <input type="password" id="login-pass" placeholder="••••••••" class="w-full p-4 mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl outline-none focus:border-indigo-500 transition-all" required>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white p-5 rounded-2xl font-bold shadow-xl shadow-indigo-100 hover:scale-[1.02] transition-transform active:scale-95">Authorize Access</button>
                 </form>
-                <div class="mt-8 flex flex-col items-center gap-5">
-                    <div id="g_id_onload" 
-                         data-client_id="719440937863-03c88m70a8o4q60gegqt9ungil7i3uhd.apps.googleusercontent.com" 
-                         data-callback="handleCredentialResponse"></div>
+                <div class="relative my-8 text-center">
+                    <span class="bg-white dark:bg-slate-900 px-4 text-xs font-bold text-slate-400 relative z-10 uppercase tracking-widest">OR</span>
+                    <hr class="absolute top-1/2 w-full border-slate-100 dark:border-slate-800">
+                </div>
+                <div class="flex flex-col items-center gap-6">
+                    <div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID" data-callback="handleCredentialResponse"></div>
                     <div class="g_id_signin" data-type="standard"></div>
-                    <button onclick="toggleAuth(true)" class="text-sm text-slate-500 hover:text-indigo-600 font-bold">Don't have an account? <span class="text-indigo-600">Register</span></button>
+                    <button onclick="toggleAuth(true)" class="text-sm font-bold text-slate-500 hover:text-indigo-600 transition">Create New Developer Account</button>
                 </div>
             </div>
 
             <div id="register-screen" class="hidden">
-                <form id="register-form" class="space-y-4">
-                    <input type="text" id="reg-user" placeholder="Full Name" class="w-full p-3 rounded-xl border border-slate-200" required>
-                    <input type="email" id="reg-email" placeholder="Email" class="w-full p-3 rounded-xl border border-slate-200" required>
-                    <input type="text" id="reg-phone" placeholder="Phone" class="w-full p-3 rounded-xl border border-slate-200" required>
-                    <input type="password" id="reg-pass" placeholder="Password" class="w-full p-3 rounded-xl border border-slate-200" required>
-                    <input type="password" id="reg-confirm" placeholder="Confirm Password" class="w-full p-3 rounded-xl border border-slate-200" required>
-                    <button type="submit" class="w-full bg-indigo-600 text-white p-4 rounded-2xl font-bold">Create Account</button>
+                <form id="register-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                    <input type="text" id="reg-user" placeholder="Full Name" class="col-span-2 p-4 bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl" required>
+                    <input type="email" id="reg-email" placeholder="Email Address" class="p-4 bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl" required>
+                    <input type="text" id="reg-phone" placeholder="Phone Number" class="p-4 bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl" required>
+                    <input type="password" id="reg-pass" placeholder="Password" class="p-4 bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl" required>
+                    <input type="password" id="reg-confirm" placeholder="Confirm" class="p-4 bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl" required>
+                    <button type="submit" class="col-span-2 bg-indigo-600 text-white p-5 rounded-2xl font-bold mt-2">Finish Registration</button>
                 </form>
-                <button onclick="toggleAuth(false)" class="w-full mt-4 text-sm text-slate-500 text-center font-bold">Back to Login</button>
+                <button onclick="toggleAuth(false)" class="mt-6 text-sm font-bold text-slate-400 uppercase tracking-widest hover:text-indigo-600">Back to Authentication</button>
             </div>
         </div>
     </div>
 
-    <div id="app-screen" class="hidden flex h-screen overflow-hidden">
+    <div id="app-screen" class="hidden flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
         
-        <aside class="w-80 bg-white border-r border-slate-200 flex flex-col p-6 dark:bg-slate-900 transition-all">
-            <div class="flex justify-between items-center mb-8">
-                <span class="font-black text-2xl text-indigo-600 tracking-tighter italic">TASKFLOW.</span>
-                <button onclick="openListModal()" class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl hover:scale-110 transition flex items-center justify-center">
-                    <i class="fas fa-plus"></i>
+        <aside class="w-80 bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl border-r border-slate-200 dark:border-slate-800 flex flex-col p-8 transition-all duration-500">
+            <div class="flex items-center justify-between mb-12">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-indigo-600 rounded-lg rotate-12 flex items-center justify-center text-white text-xs"><i class="fas fa-check"></i></div>
+                    <span class="font-black text-xl tracking-tighter dark:text-white">TF <span class="text-indigo-600">PRO</span></span>
+                </div>
+                <button onclick="openListModal()" class="group flex items-center gap-2 text-xs font-black text-indigo-600 uppercase tracking-tighter">
+                    <span class="w-8 h-8 flex items-center justify-center bg-indigo-50 rounded-full group-hover:bg-indigo-600 group-hover:text-white transition-all"><i class="fas fa-plus"></i></span>
                 </button>
             </div>
 
-            <div id="lists-container" class="flex-1 overflow-y-auto pr-2 space-y-2">
-                </div>
+            <nav id="lists-container" class="flex-1 overflow-y-auto space-y-3 custom-scroll">
+                </nav>
 
-            <div class="mt-auto pt-6 border-t border-slate-100 dark:border-slate-800">
-                <div class="flex justify-center gap-4 mb-4">
-                    <a href="https://www.facebook.com/sagardulal09" target="_blank" class="social-icon"><i class="fab fa-facebook"></i></a>
+            <div class="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800">
+                <div class="flex justify-center gap-5 mb-6">
+                    <a href="https://www.facebook.com/sagardulal09" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
                     <a href="https://www.instagram.com/itsme_sagar9/" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
                     <a href="https://www.tiktok.com/@sagardulal09" target="_blank" class="social-icon"><i class="fab fa-tiktok"></i></a>
                     <a href="https://www.threads.com/@itsme_sagar9" target="_blank" class="social-icon"><i class="fab fa-at"></i></a>
-                    <a href="https://www.linkedin.com/in/sagardulal09/" target="_blank" class="social-icon"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.linkedin.com/in/sagardulal09/" target="_blank" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
                     <a href="https://x.com/SagarDulal09" target="_blank" class="social-icon"><i class="fab fa-x-twitter"></i></a>
                 </div>
                 <div class="text-center">
-                    <p class="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1">Developer: Sagar Dulal</p>
-                    <p class="text-[8px] text-slate-300 font-bold">&copy; 2026 Sagar Dulal. All Rights Reserved.</p>
+                    <p class="text-[9px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-[0.4em] mb-2">Designed by Sagar Dulal</p>
+                    <p class="text-[8px] font-bold text-indigo-600 uppercase tracking-widest">&copy; 2026 Pro Version 2.0</p>
                 </div>
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col dark:bg-slate-950">
-            <nav class="bg-white/80 backdrop-blur-md border-b border-slate-100 px-8 py-4 flex justify-between items-center dark:bg-slate-900/80">
-                <h2 id="active-list-title" class="font-bold text-xl text-slate-800 dark:text-white">Select a Collection</h2>
+        <main class="flex-1 flex flex-col overflow-hidden relative">
+            <header class="h-20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md px-10 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
                 <div class="flex items-center gap-4">
-                    <button id="theme-toggle" class="w-10 h-10 bg-slate-50 text-slate-500 rounded-xl hover:text-indigo-600 transition dark:bg-slate-800 flex items-center justify-center">
+                    <h2 id="active-list-title" class="text-xl font-black text-slate-800 dark:text-white tracking-tight">Select Collection</h2>
+                </div>
+                <div class="flex items-center gap-6">
+                    <button id="theme-toggle" class="w-12 h-12 glass-card flex items-center justify-center hover:scale-110 transition-all text-slate-500 hover:text-indigo-600">
                         <i class="fas fa-moon"></i>
                     </button>
-                    <button onclick="confirmLogout()" class="text-sm font-bold text-red-500 hover:bg-red-50 px-4 py-2 rounded-xl transition">Logout</button>
+                    <div class="h-10 w-[1px] bg-slate-100 dark:bg-slate-800"></div>
+                    <button onclick="confirmLogout()" class="group flex items-center gap-3">
+                        <div id="user-avatar" class="w-10 h-10 bg-indigo-600 rounded-full border-4 border-white dark:border-slate-900 shadow-lg flex items-center justify-center text-white font-bold">S</div>
+                        <span class="text-xs font-black uppercase text-slate-400 group-hover:text-red-500 transition-all">Sign Out</span>
+                    </button>
                 </div>
-            </nav>
+            </header>
 
-            <div class="p-8 flex-1 overflow-y-auto">
-                <div id="task-input-section" class="hidden mb-10 max-w-4xl mx-auto">
-                    <form id="task-form" class="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-xl border border-slate-100 dark:border-slate-800 space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="md:col-span-2 space-y-2">
-                                <label class="text-[10px] font-black text-slate-400 tracking-widest uppercase ml-1">Task Description</label>
-                                <input type="text" id="task-input" placeholder="What needs to be done?" class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl outline-none border border-transparent focus:border-indigo-500 transition" required>
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-slate-400 tracking-widest uppercase ml-1">Initial Status</label>
-                                <select id="task-status" class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl outline-none border border-transparent focus:border-indigo-500 cursor-pointer">
-                                    <option value="Not Started">Not Started</option>
-                                    <option value="In Progress">In Progress</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="Delayed">Delayed</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-slate-400 tracking-widest uppercase ml-1">Due Date</label>
-                                <input type="date" id="task-date" class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl outline-none border border-transparent focus:border-indigo-500">
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-slate-400 tracking-widest uppercase ml-1 text-indigo-500">Primary Session</label>
-                                <div class="flex gap-2">
-                                    <input type="time" id="task-time-start" class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-xs">
-                                    <input type="time" id="task-time-end" class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-xs">
+            <div class="flex-1 overflow-y-auto p-10 custom-scroll bg-slate-50/50 dark:bg-slate-950/50">
+                
+                <section id="task-input-section" class="hidden max-w-5xl mx-auto mb-12">
+                    <div class="glass-card p-10">
+                        <form id="task-form" class="space-y-8">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                <div class="md:col-span-3">
+                                    <label class="input-label">Task Objective</label>
+                                    <input type="text" id="task-input" placeholder="Project milestone or routine task..." class="modern-input" required>
+                                </div>
+                                <div>
+                                    <label class="input-label">Status</label>
+                                    <select id="task-status" class="modern-input">
+                                        <option value="Not Started">Not Started</option>
+                                        <option value="In Progress">In Progress</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Delayed">Delayed</option>
+                                    </select>
                                 </div>
                             </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-slate-400 tracking-widest uppercase ml-1 text-purple-500">Secondary (Optional)</label>
-                                <div class="flex gap-2">
-                                    <input type="time" id="task-sec-start" class="w-full p-4 bg-purple-50/30 dark:bg-slate-800 rounded-2xl text-xs">
-                                    <input type="time" id="task-sec-end" class="w-full p-4 bg-purple-50/30 dark:bg-slate-800 rounded-2xl text-xs">
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label class="input-label">Timeline Date</label>
+                                    <input type="date" id="task-date" class="modern-input">
+                                </div>
+                                <div class="col-span-1">
+                                    <label class="input-label text-indigo-600">Primary Slot</label>
+                                    <div class="flex gap-2">
+                                        <input type="time" id="task-time-start" class="modern-input text-xs">
+                                        <input type="time" id="task-time-end" class="modern-input text-xs">
+                                    </div>
+                                </div>
+                                <div class="col-span-1 opacity-70 hover:opacity-100 transition-opacity">
+                                    <label class="input-label text-purple-600">Secondary Slot (Optional)</label>
+                                    <div class="flex gap-2">
+                                        <input type="time" id="task-sec-start" class="modern-input text-xs bg-purple-50/20">
+                                        <input type="time" id="task-sec-end" class="modern-input text-xs bg-purple-50/20">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="flex justify-end pt-4">
-                            <button type="submit" class="bg-indigo-600 text-white px-12 py-4 rounded-2xl font-bold shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition">Save Task</button>
-                        </div>
-                    </form>
-                </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-indigo-200 dark:shadow-indigo-900/40 hover:translate-y-[-2px] transition-all">Create Task</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
 
-                <div id="tasks-container" class="max-w-4xl mx-auto space-y-4">
+                <div id="tasks-container" class="max-w-5xl mx-auto">
                     </div>
             </div>
         </main>
     </div>
 
-    <div id="list-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl">
-            <h3 class="text-2xl font-bold mb-6 dark:text-white">New Collection</h3>
-            <form id="list-modal-form" class="space-y-5">
-                <input type="text" id="modal-list-title" placeholder="Collection Title" class="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800" required>
-                <textarea id="modal-list-desc" placeholder="What is this collection about?" class="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 h-28"></textarea>
-                <div class="flex gap-4">
-                    <button type="button" onclick="closeListModal()" class="flex-1 p-4 text-slate-400 font-bold hover:bg-slate-50 rounded-2xl transition">Cancel</button>
-                    <button type="submit" class="flex-1 p-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100">Create</button>
+    <div id="list-modal" class="hidden fixed inset-0 z-[500] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
+        <div class="glass-card w-full max-w-md p-10 animate-slide-up">
+            <h3 class="text-2xl font-black mb-6 dark:text-white tracking-tight">Create Collection</h3>
+            <form id="list-modal-form" class="space-y-4 text-left">
+                <input type="text" id="modal-list-title" placeholder="e.g., University Projects" class="modern-input" required>
+                <textarea id="modal-list-desc" placeholder="Brief context about this folder..." class="modern-input h-32"></textarea>
+                <div class="flex gap-4 pt-4">
+                    <button type="button" onclick="closeListModal()" class="flex-1 p-4 font-bold text-slate-400 uppercase tracking-widest text-xs">Cancel</button>
+                    <button type="submit" class="flex-1 p-4 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs">Deploy</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="confirm-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[2.5rem] p-8 text-center">
-            <div id="confirm-icon" class="text-5xl mb-4">🔔</div>
-            <h3 id="confirm-title" class="text-2xl font-bold mb-2 dark:text-white">Confirm Action</h3>
-            <p id="confirm-msg" class="text-slate-500 mb-8"></p>
-            <div class="flex gap-3">
-                <button id="confirm-cancel" class="flex-1 p-4 text-slate-400 font-bold">Cancel</button>
-                <button id="confirm-proceed" class="flex-1 p-4 bg-indigo-600 text-white rounded-2xl font-bold">Confirm</button>
+    <div id="trash-modal" class="hidden fixed inset-0 z-[600] flex items-center justify-center p-6 bg-slate-900/80 backdrop-blur-md">
+        <div class="glass-card w-full max-w-lg p-10 border-red-500/20">
+            <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl">
+                <i class="fas fa-trash-alt"></i>
             </div>
+            <h3 class="text-2xl font-black text-center mb-2 dark:text-white">Archive Task?</h3>
+            <p class="text-center text-slate-500 text-sm mb-8 px-10">This record will be moved to the Trash Archive for future auditing.</p>
+            
+            <form id="trash-form" class="space-y-4">
+                <input type="hidden" id="trash-target-id">
+                <label class="input-label uppercase">Reason for Deletion</label>
+                <select id="trash-reason" class="modern-input" onchange="checkOtherReason(this.value)">
+                    <option value="Task Completed Successfully">Task Completed Successfully</option>
+                    <option value="Project Scope Changed">Project Scope Changed</option>
+                    <option value="Duplicate Record Found">Duplicate Record Found</option>
+                    <option value="Missed Deadline / Incomplete">Missed Deadline / Incomplete</option>
+                    <option value="Client/Manager Cancelled">Client/Manager Cancelled</option>
+                    <option value="Wrong Entry / Error">Wrong Entry / Error</option>
+                    <option value="other">--- Custom Other Reason ---</option>
+                </select>
+                
+                <div id="other-reason-container" class="hidden mt-4">
+                    <textarea id="trash-reason-other" placeholder="Specify your custom reason here..." class="modern-input h-24 border-indigo-200"></textarea>
+                </div>
+
+                <div class="flex gap-4 pt-8">
+                    <button type="button" onclick="closeTrashModal()" class="flex-1 p-4 font-bold text-slate-400">Abort</button>
+                    <button type="submit" class="flex-1 p-4 bg-red-600 text-white rounded-2xl font-bold shadow-lg shadow-red-100">Proceed to Trash</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-[-100px] right-8 transition-all duration-500 z-[400] bg-slate-800 text-white px-8 py-5 rounded-2xl shadow-2xl font-bold"></div>
+    <div id="toast" class="fixed bottom-[-100px] left-1/2 -translate-x-1/2 bg-slate-800 dark:bg-indigo-600 text-white px-10 py-5 rounded-full shadow-2xl font-bold transition-all duration-500 z-[1000] flex items-center gap-3">
+        <i class="fas fa-bolt"></i> <span id="toast-text">Success</span>
+    </div>
 
     <script src="js/api.js"></script>
     <script src="js/app.js"></script>
     <script src="js/auth.js"></script>
+
+    <script>
+        // High-end UI helper for Trash Reason
+        function checkOtherReason(val) {
+            const container = document.getElementById('other-reason-container');
+            if(val === 'other') {
+                container.classList.remove('hidden');
+                document.getElementById('trash-reason-other').focus();
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 </html>
