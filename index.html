@@ -68,6 +68,27 @@
                 <ul id="list-container" class="space-y-2"></ul>
             </aside>
 
+            <h2 id="active-list-title" class="text-2xl font-bold mb-6">Welcome Back!</h2>
+
+    <div id="task-input-section" class="hidden mb-8 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm">
+        <form id="task-form" class="flex flex-col gap-4">
+            <input type="text" id="task-input" placeholder="What needs to be done?" 
+                   class="w-full p-3 rounded-xl border border-slate-200 dark:bg-slate-700 dark:border-slate-600 outline-none focus:ring-2 focus:ring-indigo-500">
+            
+            <div class="flex gap-4">
+                <input type="date" id="task-date" class="flex-1 p-2 rounded-lg border border-slate-200 dark:bg-slate-700 dark:border-slate-600">
+                <input type="time" id="task-time" class="flex-1 p-2 rounded-lg border border-slate-200 dark:bg-slate-700 dark:border-slate-600">
+                <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-indigo-700 transition">
+                    Add Task
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div id="tasks-container" class="space-y-3">
+        <p class="text-slate-400 text-center py-20">Select a collection from the sidebar to view tasks.</p>
+    </div>
+            
             <section class="md:col-span-3">
                 <h2 id="active-list-title" class="text-2xl font-bold mb-6">Welcome Back!</h2>
                 
