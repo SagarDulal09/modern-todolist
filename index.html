@@ -3,58 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TaskFlow Pro | Secure Enterprise Edition</title>
+    <title>TaskFlow Pro | Secure Enterprise Node</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-    <style>
-        /* High-End Contrast & UI Stability */
-        :root {
-            --accent: #6366f1;
-            --neon-blue: #38bdf8;
-        }
-
-        body { 
-            -webkit-font-smoothing: antialiased; 
-            scroll-behavior: smooth;
-        }
-
-        /* Glassmorphism Logic for Human-Based Design */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Ensure text visibility in dark mode moon-phase */
-        body.dark-mode {
-            background-color: #020617;
-            color: #ffffff;
-        }
-
-        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, 
-        body.dark-mode label, body.dark-mode input, body.dark-mode select {
-            color: #ffffff !important;
-        }
-
-        .shimmer {
-            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
-            background-size: 200% 100%;
-            animation: loading 2s infinite;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-    </style>
 </head>
-<body class="transition-all duration-500 overflow-hidden">
+<body class="transition-all duration-500 overflow-hidden font-['Plus_Jakarta_Sans']">
 
     <div id="preloader" class="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-white dark:bg-slate-950">
         <div class="relative mb-10 text-center">
@@ -82,29 +40,29 @@
                     <i class="fas fa-fingerprint"></i>
                 </div>
                 <h2 class="text-3xl font-black text-slate-900 dark:text-white mb-2">System Authorization</h2>
-                <p class="text-slate-500 dark:text-slate-400 font-medium text-sm">Secure multi-session protocol active.</p>
+                <p class="text-slate-500 dark:text-slate-400 font-medium text-sm">Enterprise Identity Node: Nepal/India</p>
             </div>
 
             <div id="login-screen" class="space-y-6">
                 <form id="login-form" class="space-y-4">
                     <div>
-                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block ml-2">Access Key (Email/Phone)</label>
-                        <input type="text" id="login-id" placeholder="Identifier" class="w-full p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all" required>
+                        <label class="input-label">Access Key (Email/Phone)</label>
+                        <input type="text" id="login-id" placeholder="Identifier" class="modern-input" required>
                     </div>
                     <div>
-                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block ml-2">Secure Passcode</label>
-                        <input type="password" id="login-pass" placeholder="••••••••" class="w-full p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all" required>
+                        <label class="input-label">Secure Passcode</label>
+                        <input type="password" id="login-pass" placeholder="••••••••" class="modern-input" required>
                     </div>
                     <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl hover:translate-y-[-2px] transition-all">Authorize Node</button>
                 </form>
                 
                 <div class="relative py-4">
                     <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200 dark:border-slate-800"></div></div>
-                    <div class="relative flex justify-center"><span class="bg-white dark:bg-slate-950 px-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Third-Party Verification</span></div>
+                    <div class="relative flex justify-center"><span class="bg-white dark:bg-slate-950 px-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">External Identity</span></div>
                 </div>
 
                 <div class="flex flex-col items-center gap-6">
-                    <div id="g_id_onload" data-client_id="719440937863-03c88m70a8o4q60gegqt9ungil7i3uhd.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
+                    <div id="g_id_onload" data-client_id="YOUR_GOOGLE_ID" data-callback="handleCredentialResponse"></div>
                     <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
                     <button onclick="toggleAuth(true)" class="text-xs font-black text-slate-400 hover:text-indigo-600 uppercase tracking-widest transition">Establish New Profile</button>
                 </div>
@@ -113,36 +71,35 @@
             <div id="register-screen" class="hidden animate-slide-up">
                 <form id="register-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="col-span-2">
-                        <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Full Identity Name</label>
-                        <input type="text" id="reg-user" class="w-full p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl" required>
+                        <label class="input-label">Full Identity Name</label>
+                        <input type="text" id="reg-user" class="modern-input" required>
                     </div>
                     <div>
-                        <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Official Email</label>
-                        <input type="email" id="reg-email" class="w-full p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl" required>
+                        <label class="input-label">Official Email</label>
+                        <input type="email" id="reg-email" class="modern-input" required>
                     </div>
                     <div>
-                        <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Phone (+977 / +91)</label>
-                        <input type="text" id="reg-phone" placeholder="e.g. 98..." class="w-full p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl" required>
+                        <label class="input-label">Phone (+977 / +91)</label>
+                        <input type="text" id="reg-phone" placeholder="98..." class="modern-input" required>
                     </div>
                     <div class="col-span-2">
-                        <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Secure Password</label>
-                        <input type="password" id="reg-pass" class="w-full p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl" required>
+                        <label class="input-label">Secure Password</label>
+                        <input type="password" id="reg-pass" class="modern-input" required>
                     </div>
 
                     <div id="otp-area" class="col-span-2 hidden animate-slide-up mt-2">
                         <div class="p-6 bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-200 dark:border-indigo-800 rounded-2xl">
-                            <label class="text-[10px] font-black uppercase text-indigo-600 mb-2 block">Enter Verification Token</label>
+                            <label class="text-[10px] font-black uppercase text-indigo-600 mb-2 block">Enter 6-Digit Token</label>
                             <div class="flex gap-2">
-                                <input type="text" id="reg-otp" maxlength="6" placeholder="000000" class="flex-1 p-4 bg-white dark:bg-slate-900 border border-indigo-300 rounded-xl text-center font-black tracking-[0.5em]">
+                                <input type="text" id="reg-otp" maxlength="6" class="flex-1 p-4 bg-white dark:bg-slate-900 border border-indigo-300 rounded-xl text-center font-black tracking-[0.5em]">
                                 <button type="button" onclick="verifyAndRegister()" class="px-6 bg-indigo-600 text-white rounded-xl font-bold text-xs uppercase">Verify</button>
                             </div>
-                            <p class="text-[9px] mt-2 text-slate-400 italic">Code dispatched to your official email.</p>
                         </div>
                     </div>
 
-                    <button type="button" id="send-otp-btn" onclick="requestOTP()" class="col-span-2 py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs mt-4">Send Security Token</button>
+                    <button type="button" id="send-otp-btn" onclick="requestOTP()" class="col-span-2 py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs mt-4">Dispatch Security Token</button>
                 </form>
-                <button onclick="toggleAuth(false)" class="w-full mt-6 text-xs font-black text-slate-400 uppercase tracking-widest hover:text-indigo-600">Back to Access Gate</button>
+                <button onclick="toggleAuth(false)" class="w-full mt-6 text-xs font-black text-slate-400 uppercase tracking-widest hover:text-indigo-600">Return to Access Gate</button>
             </div>
         </div>
     </div>
@@ -155,7 +112,7 @@
                     <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl">
                         <i class="fas fa-layer-group text-lg"></i>
                     </div>
-                    <span class="font-black text-2xl tracking-tighter dark:text-white">TF<span class="text-indigo-600">PRO</span></span>
+                    <span class="font-black text-2xl tracking-tighter dark:text-white uppercase">TF<span class="text-indigo-600">PRO</span></span>
                 </div>
                 <button onclick="openListModal()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all">
                     <i class="fas fa-plus"></i>
@@ -180,33 +137,27 @@
             
             <header class="h-24 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md px-10 flex items-center justify-between border-b border-slate-200/50 dark:border-slate-800/50 z-40">
                 <div class="flex flex-col">
-                    <h2 id="active-list-title" class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Accessing Node...</h2>
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest" id="session-info">Synchronized Session</p>
+                    <h2 id="active-list-title" class="text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase italic">Accessing Node...</h2>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest" id="session-info">Operational Flow Active</p>
                 </div>
                 <div class="flex items-center gap-6">
                     <button id="theme-toggle" class="w-14 h-14 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shadow-sm">
                         <i class="fas fa-moon text-indigo-600 dark:text-sky-400 text-xl"></i>
                     </button>
-                    <div class="h-10 w-[1px] bg-slate-200 dark:border-slate-800"></div>
                     <div class="flex items-center gap-4 group cursor-pointer" onclick="confirmLogout()">
                         <div id="user-avatar" class="w-12 h-12 rounded-full bg-indigo-600 border-4 border-white dark:border-slate-800 shadow-xl flex items-center justify-center text-white font-black">S</div>
-                        <div class="hidden md:flex flex-col">
-                            <span class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tighter" id="user-name-display">Sagar Dulal</span>
-                            <span class="text-[9px] font-bold text-red-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Disconnect</span>
-                        </div>
                     </div>
                 </div>
             </header>
 
             <div class="flex-1 overflow-y-auto p-6 md:p-12 custom-scroll">
-                
                 <section id="task-input-section" class="hidden max-w-6xl mx-auto mb-16 animate-slide-up">
                     <div class="glass-panel p-10 rounded-[3rem] border-indigo-500/10">
                         <form id="task-form" class="space-y-8">
                             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
                                 <div class="lg:col-span-3">
-                                    <label class="input-label">Core Task Objective</label>
-                                    <input type="text" id="task-input" placeholder="Define mission objective..." class="modern-input py-6 text-lg" required>
+                                    <label class="input-label">Core Mission Objective</label>
+                                    <input type="text" id="task-input" placeholder="Define objective..." class="modern-input py-6 text-lg" required>
                                 </div>
                                 <div>
                                     <label class="input-label">Node Status</label>
@@ -221,32 +172,32 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <div>
-                                    <label class="input-label">Activation Date</label>
+                                    <label class="input-label">Start Date</label>
                                     <input type="date" id="task-date" class="modern-input">
                                 </div>
                                 <div>
-                                    <label class="input-label text-red-500">Target Deadline (End Date)</label>
-                                    <input type="date" id="task-end-date" class="modern-input border-red-500/20 bg-red-50/5">
+                                    <label class="input-label text-red-500">End Deadline</label>
+                                    <input type="date" id="task-end-date" class="modern-input border-red-500/20">
                                 </div>
                                 <div>
-                                    <label class="input-label text-indigo-600">Primary Slot</label>
+                                    <label class="input-label text-indigo-600">Primary Session</label>
                                     <div class="flex gap-2">
                                         <input type="time" id="task-time-start" class="modern-input text-xs">
                                         <input type="time" id="task-time-end" class="modern-input text-xs">
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="input-label text-purple-600">Secondary Slot</label>
+                                    <label class="input-label text-purple-600">Secondary Session</label>
                                     <div class="flex gap-2">
-                                        <input type="time" id="task-sec-start" class="modern-input text-xs bg-purple-500/5">
-                                        <input type="time" id="task-sec-end" class="modern-input text-xs bg-purple-500/5">
+                                        <input type="time" id="task-sec-start" class="modern-input text-xs">
+                                        <input type="time" id="task-sec-end" class="modern-input text-xs">
                                     </div>
                                 </div>
                             </div>
 
                             <div class="flex justify-end pt-4">
                                 <button type="submit" class="bg-indigo-600 text-white px-12 py-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl hover:scale-105 transition-all">
-                                    Deploy Objective
+                                    Deploy Node
                                 </button>
                             </div>
                         </form>
@@ -261,26 +212,18 @@
 
     <div id="trash-modal" class="hidden fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-xl">
         <div class="glass-panel w-full max-w-xl p-12 border-red-500/30 rounded-[3rem] animate-slide-up">
-            <h3 class="text-3xl font-black text-center mb-10 dark:text-white">Relocate to Archive?</h3>
-            
+            <h3 class="text-3xl font-black text-center mb-10 dark:text-white uppercase">Archive Objective?</h3>
             <form id="trash-form" class="space-y-6">
                 <input type="hidden" id="trash-target-id">
                 <div>
-                    <label class="input-label text-red-500 uppercase">Reason for Archival</label>
-                    <select id="trash-reason" class="modern-input py-5" onchange="checkOtherReason(this.value)">
+                    <label class="input-label text-red-500">Relocation Reason</label>
+                    <select id="trash-reason" class="modern-input py-5">
                         <option value="Objective Attained">Objective Attained</option>
                         <option value="Strategic Scope Change">Strategic Scope Change</option>
-                        <option value="Timeline Exceeded (Expired)">Timeline Exceeded (Expired)</option>
+                        <option value="Timeline Exceeded">Timeline Exceeded</option>
                         <option value="Duplicate Node">Duplicate Node</option>
-                        <option value="Canceled by Admin">Canceled by Admin</option>
-                        <option value="other">--- Custom Narrative ---</option>
                     </select>
                 </div>
-                
-                <div id="other-reason-container" class="hidden">
-                    <textarea id="trash-reason-other" placeholder="Explain the custom archival reason..." class="modern-input h-32"></textarea>
-                </div>
-
                 <div class="flex gap-4 pt-6">
                     <button type="button" onclick="closeTrashModal()" class="flex-1 py-5 font-black text-slate-400 uppercase text-xs">Abort</button>
                     <button type="submit" class="flex-1 py-5 bg-red-600 text-white rounded-2xl font-black uppercase text-xs">Confirm Archival</button>
@@ -297,17 +240,5 @@
     <script src="js/api.js"></script>
     <script src="js/app.js"></script>
     <script src="js/auth.js"></script>
-
-    <script>
-        function checkOtherReason(val) {
-            const container = document.getElementById('other-reason-container');
-            if(val === 'other') {
-                container.classList.remove('hidden');
-                document.getElementById('trash-reason-other').focus();
-            } else {
-                container.classList.add('hidden');
-            }
-        }
-    </script>
 </body>
 </html>
