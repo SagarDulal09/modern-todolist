@@ -1,167 +1,175 @@
-/* Custom Styles for Modern Todo App 
-  Author: Sagar Dulal
-*/
+/* ============================================================
+   1. CORE SETUP & RESET
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
 
 :root {
-    --primary: #4f46e5;
-    --primary-hover: #4338ca;
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
     --bg-light: #f8fafc;
-    --bg-dark: #0f172a;
+    --bg-dark: #020617;
     --card-light: #ffffff;
-    --card-dark: #1e293b;
+    --card-dark: #0f172a;
     --text-light: #1e293b;
     --text-dark: #f1f5f9;
+    --border-light: #e2e8f0;
+    --border-dark: #1e293b;
 }
-/* =========================================
-   1. UTILITY CLASSES (Add this at the top)
-   ========================================= */
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-light);
+    transition: background-color 0.3s, color 0.3s;
+    overflow: hidden; /* Prevents double scrollbars on the main page */
+}
+
 .hidden { 
     display: none !important; 
 }
 
-/* =========================================
-   2. DARK MODE THEME
-   ========================================= */
-body.dark-mode {
-    background-color: #0f172a;
-    color: #f1f5f9;
-}
-
-body.dark-mode .bg-white {
-    background-color: #1e293b !important;
-    color: #f1f5f9 !important;
-    border-color: #334155 !important;
-}
-
-/* =========================================
-   3. CUSTOM STYLES
-   ========================================= */
-/* Your existing custom styling for buttons, cards, etc. */
-/* Base Smooth Transitions */
-body {
-    transition: background-color 0.3s ease, color 0.3s ease;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
-
-/* Animations */
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.animate-slide-in {
-    animation: slideIn 0.3s ease forwards;
-}
-
-/* Checkbox Customization */
-input[type="checkbox"] {
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-input[type="checkbox"]:active {
-    transform: scale(1.2);
-}
-
-/* Sidebar Item Hover */
-#list-container li {
-    transition: all 0.2s ease;
-}
-
-#list-container li:hover {
-    padding-left: 12px;
-}
-
-/* Dark Mode Classes */
+/* ============================================================
+   2. NEON DARK MODE
+   ============================================================ */
 body.dark-mode {
     background-color: var(--bg-dark);
     color: var(--text-dark);
 }
 
-body.dark-mode nav,
-body.dark-mode footer,
-body.dark-mode aside {
-    background-color: var(--card-dark);
-    border-color: #334155;
-}
-
 body.dark-mode .bg-white {
     background-color: var(--card-dark) !important;
-    color: var(--text-dark);
+    border-color: var(--border-dark) !important;
 }
 
-body.dark-mode input {
-    background-color: #334155;
-    border-color: #475569;
-    color: white;
+body.dark-mode input, 
+body.dark-mode textarea {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f1f5f9 !important;
 }
 
-body.dark-mode .hover\:bg-slate-100:hover {
-    background-color: #334155;
+/* Neon Glow for Dark Mode Buttons */
+body.dark-mode .bg-indigo-600 {
+    background-color: var(--primary) !important;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
 }
 
-body.dark-mode #active-list-title {
-    color: #818cf8;
+/* ============================================================
+   3. SIDEBAR & NAVIGATION
+   ============================================================ */
+aside {
+    transition: width 0.3s ease;
 }
 
-/* Toast Styling Enhancements */
+#lists-container div {
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+#lists-container div:hover {
+    background-color: rgba(99, 102, 241, 0.05);
+    border-left-color: var(--primary);
+    transform: translateX(4px);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 5px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+body.dark-mode ::-webkit-scrollbar-thumb {
+    background: #334155;
+}
+
+/* ============================================================
+   4. MODALS & GLASSMORPHISM
+   ============================================================ */
+#list-modal, #confirm-modal {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+#list-modal > div, #confirm-modal > div {
+    animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px) scale(0.95); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* ============================================================
+   5. TASKS & TOASTS
+   ============================================================ */
+#tasks-container div {
+    animation: taskIn 0.3s ease;
+}
+
+@keyframes taskIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 #toast {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-    min-width: 200px;
-    text-align: center;
+    position: fixed;
+    bottom: -100px;
+    right: 20px;
+    min-width: 280px;
+    z-index: 999;
+    transition: bottom 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* Empty State Illustration Filter (Makes icons look better in dark mode) */
-body.dark-mode #empty-state i {
-    color: #475569;
+/* Custom Checkbox */
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    height: 1.25rem;
+    width: 1.25rem;
+    background-color: transparent;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
-/* Task Hover Effects */
-#task-container li {
-    border: 1px solid transparent;
-    transition: border 0.2s ease, box-shadow 0.2s ease;
+input[type="checkbox"]:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
 }
 
-#task-container li:hover {
-    border-color: #e2e8f0;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+input[type="checkbox"]:checked:after {
+    content: "\f00c";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: white;
+    font-size: 0.75rem;
 }
 
-body.dark-mode #task-container li:hover {
-    border-color: #475569;
-}
-
-/* Responsive Tweaks */
+/* ============================================================
+   6. RESPONSIVE HELPERS
+   ============================================================ */
 @media (max-width: 768px) {
     aside {
-        border-right: none;
-        border-bottom: 1px solid #e2e8f0;
-        padding-bottom: 1rem;
-        margin-bottom: 1rem;
+        display: none; /* Add mobile menu logic if needed */
     }
 }
