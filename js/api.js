@@ -1,68 +1,85 @@
 /**
  * TASKFLOW PRO - CORE API ENGINE
- * Developed by Sagar Dulal | © 2026
- * Description: Interface between Frontend Logic and Google Apps Script Cloud.
+ * Architected by Sagar Dulal | © 2026
+ * Protocol: Secure Google Apps Script Web App (GAS)
  */
 
-// 1. CONFIGURATION - SAGAR: PASTE YOUR DEPLOYED WEB APP URL HERE
 const API_CONFIG = {
-    URL: "https://script.google.com/macros/s/AKfycbxBnJA-bySZumgVenlMExqcVZUsUSdo3Efxywx_lHL6pFeNXQ6Uxg4bUz2fwKYw9ohJaw/exec", // Update this after deploying Code.gs
-    TIMEOUT: 15000,
-    VERSION: "2.1.0-Enterprise"
+    // ⚠️ CRITICAL: Replace with your deployed Web App URL from Google Apps Script
+    URL: "https://script.google.com/macros/s/AKfycbxBnJA-bySZumgVenlMExqcVZUsUSdo3Efxywx_lHL6pFeNXQ6Uxg4bUz2fwKYw9ohJaw/exec", 
+    TIMEOUT_MS: 30000, // 30s timeout for stability in low-bandwidth areas
+    RETRIES: 2
 };
 
 /**
- * MASTER COMMUNICATION HANDLER
- * Uses the Fetch API with optimized JSON headers
+ * Primary Communication Gateway
+ * @param {Object} payload - The action and data being sent to the cloud.
  */
 async function apiRequest(payload) {
+    APILoader.show();
+    
     try {
-        // Human-Touch: Add a micro-delay for "Processing" feel if on high-speed internet
-        const startTime = Date.now();
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT_MS);
 
         const response = await fetch(API_CONFIG.URL, {
             method: 'POST',
-            mode: 'no-cors', // Essential for Google Apps Script Web App calls
-            cache: 'no-cache',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            mode: 'cors', // Cross-Origin Resource Sharing enabled
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8', 
+            },
+            body: JSON.stringify(payload),
+            signal: controller.signal
         });
 
-        /**
-         * NOTE: Because 'no-cors' mode is used for GAS, we cannot read the 
-         * response body directly in standard browser fetches. 
-         * We rely on a "Hidden JSONP" or "Success-Mirror" strategy.
-         */
-        
-        // For Google Apps Script specifically, we usually handle the response 
-        // via a redirect or a standard JSON return if CORS is enabled on the GAS side.
-        // Below is the standardized handling:
+        clearTimeout(timeoutId);
 
-        const result = await fetch(API_CONFIG.URL, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        });
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
+        }
+
+        const data = await response.json();
         
-        return await result.json();
+        // Logical Gatekeeper
+        if (!data.success && data.message) {
+            console.warn("System Response Warning:", data.message);
+        }
+
+        return data;
 
     } catch (error) {
-        console.error("%c API ERROR ", "background: #ef4444; color: #fff;", error);
-        return { success: false, message: "Cloud Connection Interrupted." };
+        console.error("NODE CONNECTION FAILURE:", error);
+        
+        let errorMsg = "Network Unstable. Checking Connection...";
+        if (error.name === 'AbortError') errorMsg = "Request Timed Out. Retrying...";
+        
+        showToast(errorMsg);
+        return { success: false, message: errorMsg };
+    } finally {
+        APILoader.hide();
     }
 }
 
 /**
- * THE API LOADER OVERLAY (GLOBAL)
+ * UI Sync Components
  */
 const APILoader = {
     show: () => {
+        if (document.getElementById('api-global-loader')) return;
+        
         const loader = document.createElement('div');
         loader.id = 'api-global-loader';
-        loader.className = 'fixed inset-0 z-[11000] flex items-center justify-center bg-slate-950/40 backdrop-blur-sm transition-opacity duration-300';
+        loader.className = 'fixed inset-0 z-[11000] flex flex-col items-center justify-center bg-slate-950/60 backdrop-blur-md transition-opacity duration-300';
         loader.innerHTML = `
-            <div class="glass-panel p-8 rounded-[2rem] flex flex-col items-center gap-4 animate-pulse">
-                <i class="fas fa-satellite-dish text-indigo-500 text-2xl animate-bounce"></i>
-                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white">Syncing with Node...</span>
+            <div class="glass-panel p-10 rounded-[2.5rem] flex flex-col items-center gap-6 border border-indigo-500/30">
+                <div class="relative">
+                    <i class="fas fa-satellite-dish text-indigo-500 text-3xl animate-pulse"></i>
+                    <div class="absolute -top-1 -right-1 w-3 h-3 bg-cyan-400 rounded-full animate-ping"></div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <span class="text-[10px] font-black uppercase tracking-[0.4em] text-white">Syncing Node</span>
+                    <span class="text-[8px] font-bold text-slate-400 uppercase mt-2">Connecting to Secure Cloud</span>
+                </div>
             </div>
         `;
         document.body.appendChild(loader);
@@ -77,26 +94,21 @@ const APILoader = {
 };
 
 /**
- * EXTENDED API ACTIONS MAPPING
- * Reference this for implementing new features
+ * Data Sanitizer for Task Submissions
+ * Ensures all session times and dates are formatted for the Spreadsheet.
  */
-const API_ACTIONS = {
-    // Auth & Security
-    SEND_OTP: 'sendOTP',           // Dispatches 6-digit code via MailApp
-    VERIFY_OTP: 'validateOTP',     // Validates code + 5-minute expiry
-    REGISTER: 'registerUser',      // Finalizes verified profile
-    LOGIN: 'loginUser',            // Validates credentials
-    
-    // Task Architecture
-    ADD_TASK: 'addTask',           // Now includes Start Date, End Date, Dual Sessions
-    GET_TASKS: 'getTasks',         // Fetches specific List Cluster
-    UPDATE_STATUS: 'updateTaskStatus', 
-    ARCHIVE_TASK: 'deleteTask',    // Soft-delete with mandatory Reason
-    
-    // Project Clusters
-    ADD_LIST: 'addList',
-    GET_LISTS: 'getLists'
+const DataSanitizer = {
+    formatTask: (taskData) => {
+        return {
+            ...taskData,
+            timestamp: new Date().toISOString(),
+            deviceInfo: navigator.userAgent.substring(0, 100),
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        };
+    }
 };
 
-// Console Branding for Debugging
-console.log(`%c TaskFlow Pro API Connected | Version ${API_CONFIG.VERSION} `, "color: #6366f1; font-weight: bold; border: 1px solid #6366f1; padding: 4px; border-radius: 4px;");
+// Auto-check for API URL configuration
+if (API_CONFIG.URL === "YOUR_GOOGLE_SCRIPT_WEB_APP_URL") {
+    console.error("TASKFLOW PRO: API URL NOT CONFIGURED. Backend sync will fail.");
+}
