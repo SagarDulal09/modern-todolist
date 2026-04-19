@@ -1,105 +1,139 @@
+/* ============================================================
+   1. SESSION MANAGEMENT (Check on Page Load)
+   ============================================================ */
+
+window.addEventListener('load', () => {
+    const savedUser = localStorage.getItem('todo_user');
+    
+    // If user is already logged in, skip the login screen
+    if (savedUser) {
+        document.getElementById('auth-container').classList.add('hidden');
+        document.getElementById('app-screen').classList.remove('hidden');
+        
+        // Initialize the app logic from app.js
+        if (typeof initApp === "function") {
+            initApp();
+        }
+    }
+});
+
+/* ============================================================
+   2. UI TOGGLES
+   ============================================================ */
+
+/**
+ * Switch between Login and Register screens
+ * @param {Boolean} showRegister - True to show register, False for login
+ */
 function toggleAuth(showRegister) {
-    document.getElementById('login-screen').classList.toggle('hidden', showRegister);
-    document.getElementById('register-screen').classList.toggle('hidden', !showRegister);
+    const loginScreen = document.getElementById('login-screen');
+    const registerScreen = document.getElementById('register-screen');
+
+    if (showRegister) {
+        loginScreen.classList.add('hidden');
+        registerScreen.classList.remove('hidden');
+    } else {
+        loginScreen.classList.remove('hidden');
+        registerScreen.classList.add('hidden');
+    }
 }
 
-// Handle Registration
-document.getElementById('register-form').onsubmit = async (e) => {
-    e.preventDefault();
-    
-    // Check passwords match
-    const pass = document.getElementById('reg-pass').value;
-    const confirm = document.getElementById('reg-confirm').value;
-    if (pass !== confirm) return showToast("Passwords do not match", "error");
+/* ============================================================
+   3. AUTHENTICATION ACTIONS
+   ============================================================ */
 
-    const user = {
-        name: document.getElementById('reg-user').value,
-        email: document.getElementById('reg-email').value,
-        phone: document.getElementById('reg-phone').value,
-        password: pass,
-        id: "U" + Date.now()
-    };
-
-    showToast("Attempting Registration...");
-    
-    try {
-        const res = await apiRequest({ action: 'registerUser', user });
-        
-        if (res.success) {
-            showToast("Registration Success! Please Login.");
-            toggleAuth(false);
-        } else {
-            // This will show the ACTUAL error from Google Sheets
-            alert("Registration Failed: " + (res.message || res.error || "Unknown Error"));
-        }
-    } catch (err) {
-        alert("Network Error: " + err.message);
-    }
-};
-
-// Handle Login
-// Handle Login
+// HANDLE LOGIN
 document.getElementById('login-form').onsubmit = async (e) => {
     e.preventDefault();
+    
     const loginId = document.getElementById('login-id').value;
     const loginPass = document.getElementById('login-pass').value;
 
     if (typeof showToast === "function") showToast("Authenticating...");
 
-    try {
-        const res = await apiRequest({ 
-            action: 'loginUser', 
-            loginId: loginId, 
-            loginPass: loginPass 
-        });
+    const res = await apiRequest({ 
+        action: 'loginUser', 
+        loginId: loginId, 
+        loginPass: loginPass 
+    });
 
-        if (res.success) {
-            localStorage.setItem('todo_user', JSON.stringify(res.user));
-            
-            // HIDE AUTH, SHOW APP
-            document.getElementById('auth-container').classList.add('hidden');
-            document.getElementById('app-screen').classList.remove('hidden');
-            
-            if (typeof initApp === "function") initApp();
-        } else {
-            if (typeof showToast === "function") showToast(res.message || "Login Failed", "error");
-        }
-    } catch (err) {
-        console.error("Login Error:", err);
-        if (typeof showToast === "function") showToast("Server Error", "error");
-    } // THIS CLOSES THE TRY/CATCH PROPERLY
-};
-
-function logout() {
-    localStorage.removeItem('todo_user');
-    location.reload();
-}
-// Check if user is already logged in when the page loads
-window.addEventListener('load', () => {
-    const savedUser = localStorage.getItem('todo_user');
-    if (savedUser) {
-        // User is logged in, skip login screen
+    if (res.success) {
+        // Store user data in browser memory
+        localStorage.setItem('todo_user', JSON.stringify(res.user));
+        
+        // Switch screens
         document.getElementById('auth-container').classList.add('hidden');
         document.getElementById('app-screen').classList.remove('hidden');
-        if (typeof initApp === "function") initApp();
+        
+        // Start the app
+        initApp();
+        if (typeof showToast === "function") showToast(`Welcome back, ${res.user.name}!`);
+    } else {
+        if (typeof showToast === "function") showToast(res.message || "Login failed", "error");
     }
-});
+};
+
+// HANDLE REGISTRATION
+document.getElementById('register-form').onsubmit = async (e) => {
+    e.preventDefault();
+    
+    const name = document.getElementById('reg-user').value;
+    const email = document.getElementById('reg-email').value;
+    const phone = document.getElementById('reg-phone').value;
+    const pass = document.getElementById('reg-pass').value;
+    const confirm = document.getElementById('reg-confirm').value;
+
+    // Basic Validation
+    if (pass !== confirm) {
+        return showToast("Passwords do not match!", "error");
+    }
+
+    if (typeof showToast === "function") showToast("Creating account...");
+
+    const res = await apiRequest({ 
+        action: 'registerUser', 
+        name, email, phone, pass 
+    });
+
+    if (res.success) {
+        showToast("Registration successful! Please login.");
+        toggleAuth(false); // Send user back to login screen
+        document.getElementById('register-form').reset();
+    } else {
+        showToast(res.message || "Registration failed", "error");
+    }
+};
+
+/* ============================================================
+   4. GOOGLE ONE-TAP / SIGN-IN
+   ============================================================ */
+
+/**
+ * Triggered by the Google Identity Services script in index.html
+ */
 async function handleCredentialResponse(response) {
     try {
-        const responsePayload = JSON.parse(atob(response.credential.split('.')[1]));
-        const user = {
-            id: responsePayload.sub,
-            name: responsePayload.name,
-            email: responsePayload.email,
-            picture: responsePayload.picture
+        // Decode the JWT token from Google
+        const payload = JSON.parse(atob(response.credential.split('.')[1]));
+        
+        const userData = {
+            id: payload.sub,
+            name: payload.name,
+            email: payload.email,
+            picture: payload.picture
         };
 
-        const res = await apiRequest({ action: 'syncUser', user });
+        if (typeof showToast === "function") showToast("Syncing Google Account...");
+
+        // Tell the database about this Google user
+        const res = await apiRequest({ action: 'syncUser', user: userData });
+
         if (res.success) {
             localStorage.setItem('todo_user', JSON.stringify(res.user));
-            location.reload();
+            location.reload(); // Refresh to enter app
         }
-    } catch (error) {
-        console.error("Google Sync Error:", error);
+    } catch (e) {
+        console.error("Google Auth Error:", e);
+        if (typeof showToast === "function") showToast("Google Login failed", "error");
     }
 }
