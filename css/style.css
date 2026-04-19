@@ -1,45 +1,42 @@
 /* ============================================================
-   1. CORE SETUP & RESET
+   1. CORE SETUP & FONTS
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --primary: #6366f1;
+    --primary-glow: rgba(99, 102, 241, 0.4);
+    --bg-light: #f8fafc;
+    --bg-dark: #020617;
+    --card-light: #ffffff;
+    --card-dark: #0f172a;
+    --text-main-light: #1e293b;
+    --text-main-dark: #f8fafc;
+    --border-light: #f1f5f9;
+    --border-dark: #1e293b;
+}
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
-}
-
-:root {
-    --primary: #6366f1;
-    --primary-hover: #4f46e5;
-    --bg-light: #f8fafc;
-    --bg-dark: #020617;
-    --card-light: #ffffff;
-    --card-dark: #0f172a;
-    --text-light: #1e293b;
-    --text-dark: #f1f5f9;
-    --border-light: #e2e8f0;
-    --border-dark: #1e293b;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 body {
     background-color: var(--bg-light);
-    color: var(--text-light);
-    transition: background-color 0.3s, color 0.3s;
-    overflow: hidden; /* Prevents double scrollbars on the main page */
-}
-
-.hidden { 
-    display: none !important; 
+    color: var(--text-main-light);
+    transition: background-color 0.4s ease;
+    overflow-x: hidden;
+    width: 100%;
 }
 
 /* ============================================================
-   2. NEON DARK MODE
+   2. NEON DARK MODE (FIXED VISIBILITY)
    ============================================================ */
 body.dark-mode {
     background-color: var(--bg-dark);
-    color: var(--text-dark);
+    color: var(--text-main-dark);
 }
 
 body.dark-mode .bg-white {
@@ -47,129 +44,143 @@ body.dark-mode .bg-white {
     border-color: var(--border-dark) !important;
 }
 
+body.dark-mode .text-slate-800, 
+body.dark-mode .text-slate-700,
+body.dark-mode h2, 
+body.dark-mode h3, 
+body.dark-mode p.font-bold {
+    color: #ffffff !important;
+}
+
+body.dark-mode .text-slate-500,
+body.dark-mode .text-slate-400 {
+    color: #94a3b8 !important;
+}
+
 body.dark-mode input, 
+body.dark-mode select, 
 body.dark-mode textarea {
     background-color: #1e293b !important;
-    border-color: #334155 !important;
-    color: #f1f5f9 !important;
-}
-
-/* Neon Glow for Dark Mode Buttons */
-body.dark-mode .bg-indigo-600 {
-    background-color: var(--primary) !important;
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+    border: 1px solid #334155 !important;
+    color: #ffffff !important;
 }
 
 /* ============================================================
-   3. SIDEBAR & NAVIGATION
+   3. PRELOADER & LOADING ANIMATION
    ============================================================ */
-aside {
-    transition: width 0.3s ease;
-}
-
-#lists-container div {
-    border-left: 3px solid transparent;
-    transition: all 0.2s ease;
-}
-
-#lists-container div:hover {
-    background-color: rgba(99, 102, 241, 0.05);
-    border-left-color: var(--primary);
-    transform: translateX(4px);
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 5px;
-}
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 10px;
-}
-body.dark-mode ::-webkit-scrollbar-thumb {
-    background: #334155;
-}
-
-/* ============================================================
-   4. MODALS & GLASSMORPHISM
-   ============================================================ */
-#list-modal, #confirm-modal {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-#list-modal > div, #confirm-modal > div {
-    animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes slideUp {
-    from { transform: translateY(20px) scale(0.95); opacity: 0; }
-    to { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-/* ============================================================
-   5. TASKS & TOASTS
-   ============================================================ */
-#tasks-container div {
-    animation: taskIn 0.3s ease;
-}
-
-@keyframes taskIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-#toast {
+#preloader {
     position: fixed;
-    bottom: -100px;
-    right: 20px;
-    min-width: 280px;
-    z-index: 999;
-    transition: bottom 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-/* Custom Checkbox */
-input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
-    height: 1.25rem;
-    width: 1.25rem;
-    background-color: transparent;
-    border: 2px solid #cbd5e1;
-    border-radius: 6px;
+    inset: 0;
+    background: #ffffff;
+    z-index: 9999;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
 }
 
-input[type="checkbox"]:checked {
-    background-color: var(--primary);
-    border-color: var(--primary);
+body.dark-mode #preloader { background: var(--bg-dark); }
+
+.loader-bar {
+    width: 240px; height: 6px;
+    background: #f1f5f9; border-radius: 20px;
+    overflow: hidden; position: relative;
 }
 
-input[type="checkbox"]:checked:after {
-    content: "\f00c";
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    color: white;
-    font-size: 0.75rem;
+body.dark-mode .loader-bar { background: #1e293b; }
+
+.loader-progress {
+    height: 100%; width: 0%;
+    background: var(--primary);
+    box-shadow: 0 0 15px var(--primary-glow);
+    transition: width 0.1s linear;
 }
 
 /* ============================================================
-   6. RESPONSIVE HELPERS
+   4. STATUS PILLS & SOCIAL ICONS
    ============================================================ */
+.status-pill {
+    padding: 4px 12px; border-radius: 8px;
+    font-size: 10px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+
+.status-not-started { background: #f1f5f9; color: #64748b; }
+.status-in-progress { background: #e0e7ff; color: #4338ca; }
+.status-completed { background: #dcfce7; color: #15803d; }
+.status-delayed { background: #fee2e2; color: #b91c1c; }
+
+body.dark-mode .status-not-started { background: #334155; color: #cbd5e1; }
+body.dark-mode .status-in-progress { background: #312e81; color: #c7d2fe; }
+
+.social-icon {
+    font-size: 18px; color: #94a3b8;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.social-icon:hover {
+    color: var(--primary); transform: translateY(-4px) scale(1.2);
+}
+
+/* ============================================================
+   5. RESPONSIVE LAYOUT (MOBILE FIRST)
+   ============================================================ */
+
+/* Desktop & Large Screens */
+#app-screen { display: flex; height: 100vh; }
+
+/* Mobile (Small Screens) */
 @media (max-width: 768px) {
+    #app-screen { flex-direction: column; }
+
     aside {
-        display: none; /* Add mobile menu logic if needed */
+        width: 100% !important;
+        height: auto !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border-light);
+        padding: 1rem !important;
     }
+
+    #lists-container {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        gap: 10px;
+    }
+
+    #lists-container div {
+        min-width: 160px;
+        margin-bottom: 0 !important;
+    }
+
+    .mt-auto { display: none; } /* Hide socials in sidebar on mobile to save space */
+    
+    main { height: 100vh; overflow-y: auto; }
+    
+    #task-form { padding: 1.5rem !important; }
+    
+    .grid-cols-1.md\:grid-cols-3 {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Tablet (Medium Screens) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    aside { width: 240px !important; }
+    .social-icon { font-size: 16px; }
+}
+
+/* ============================================================
+   6. UI UTILITIES
+   ============================================================ */
+.hidden { display: none !important; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
+
+#toast {
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255,255,255,0.1);
 }
