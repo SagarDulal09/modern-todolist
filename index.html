@@ -17,98 +17,149 @@
             
             <div id="login-screen">
                 <form id="login-form" class="space-y-4">
-                    <input type="text" id="login-id" placeholder="Email or Phone" class="w-full p-3 rounded-xl border border-slate-200" required>
-                    <input type="password" id="login-pass" placeholder="Password" class="w-full p-3 rounded-xl border border-slate-200" required>
-                    <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold">Login</button>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-500 ml-1">IDENTIFIER</label>
+                        <input type="text" id="login-id" placeholder="Email or Phone" class="w-full p-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-500 ml-1">PASSWORD</label>
+                        <input type="password" id="login-pass" placeholder="••••••••" class="w-full p-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">Login</button>
                 </form>
-                <div class="mt-6 flex flex-col items-center gap-4">
-                    <div id="g_id_onload" data-client_id="719440937863-03c88m70a8o4q60gegqt9ungil7i3uhd.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
+                
+                <div class="mt-8 flex flex-col items-center gap-4">
+                    <div id="g_id_onload" 
+                         data-client_id="719440937863-03c88m70a8o4q60gegqt9ungil7i3uhd.apps.googleusercontent.com" 
+                         data-callback="handleCredentialResponse"></div>
                     <div class="g_id_signin" data-type="standard"></div>
-                    <button onclick="toggleAuth(true)" class="text-sm text-slate-500">New here? Create Account</button>
+                    
+                    <button onclick="toggleAuth(true)" class="text-sm text-slate-500 hover:text-indigo-600 font-medium mt-2">
+                        New here? <span class="text-indigo-600 underline">Create Account</span>
+                    </button>
                 </div>
             </div>
 
             <div id="register-screen" class="hidden">
                 <form id="register-form" class="space-y-4">
                     <input type="text" id="reg-user" placeholder="Full Name" class="w-full p-3 rounded-xl border border-slate-200" required>
-                    <input type="email" id="reg-email" placeholder="Email" class="w-full p-3 rounded-xl border border-slate-200" required>
-                    <input type="text" id="reg-phone" placeholder="Phone" class="w-full p-3 rounded-xl border border-slate-200" required>
-                    <input type="password" id="reg-pass" placeholder="Password" class="w-full p-3 rounded-xl border border-slate-200" required>
+                    <input type="email" id="reg-email" placeholder="Email Address" class="w-full p-3 rounded-xl border border-slate-200" required>
+                    <input type="text" id="reg-phone" placeholder="Phone Number" class="w-full p-3 rounded-xl border border-slate-200" required>
+                    <input type="password" id="reg-pass" placeholder="Create Password" class="w-full p-3 rounded-xl border border-slate-200" required>
                     <input type="password" id="reg-confirm" placeholder="Confirm Password" class="w-full p-3 rounded-xl border border-slate-200" required>
-                    <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold">Register</button>
+                    <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold hover:bg-indigo-700 transition">Create Account</button>
                 </form>
-                <button onclick="toggleAuth(false)" class="w-full mt-4 text-sm text-slate-500 text-center">Back to Login</button>
+                <button onclick="toggleAuth(false)" class="w-full mt-4 text-sm text-slate-500 text-center font-medium">Already have an account? <span class="text-indigo-600">Login</span></button>
             </div>
         </div>
     </div>
 
     <div id="app-screen" class="hidden flex h-screen overflow-hidden">
+        
         <aside class="w-72 bg-white border-r border-slate-200 flex flex-col p-6 dark:bg-slate-900">
             <div class="flex justify-between items-center mb-10">
-                <span class="font-bold text-xl text-indigo-600">TaskFlow</span>
-                <button onclick="openListModal()" class="text-indigo-600 hover:scale-110 transition"><i class="fas fa-plus-circle fa-lg"></i></button>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-check text-white text-xs"></i>
+                    </div>
+                    <span class="font-bold text-xl text-slate-800 dark:text-white">TaskFlow</span>
+                </div>
+                <button onclick="openListModal()" class="text-indigo-600 hover:scale-110 transition p-2 bg-indigo-50 rounded-lg">
+                    <i class="fas fa-plus"></i>
+                </button>
             </div>
-            <div id="lists-container" class="flex-1 overflow-y-auto space-y-1">
+
+            <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-4">My Collections</p>
+            <div id="lists-container" class="flex-1 overflow-y-auto space-y-1 pr-2">
                 </div>
         </aside>
 
         <main class="flex-1 flex flex-col dark:bg-slate-950">
             <nav class="bg-white border-b border-slate-100 px-8 py-4 flex justify-between items-center dark:bg-slate-900">
-                <h2 id="active-list-title" class="font-bold text-xl text-slate-800 dark:text-white">Welcome!</h2>
+                <h2 id="active-list-title" class="font-bold text-xl text-slate-800 dark:text-white">Welcome Back!</h2>
                 <div class="flex items-center gap-6">
-                    <button id="theme-toggle" class="text-slate-500 hover:text-indigo-600 transition"><i class="fas fa-moon"></i></button>
-                    <button onclick="confirmLogout()" class="text-sm font-bold text-red-500">Logout</button>
+                    <button id="theme-toggle" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-500 hover:text-indigo-600 transition dark:bg-slate-800">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button onclick="confirmLogout()" class="text-sm font-bold text-red-500 hover:bg-red-50 px-4 py-2 rounded-lg transition">
+                        Logout
+                    </button>
                 </div>
             </nav>
 
-            <div class="p-8 flex-1 overflow-y-auto">
-                <div id="task-input-section" class="hidden mb-8 max-w-2xl mx-auto">
-                    <form id="task-form" class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm space-y-4">
-                        <input type="text" id="task-input" placeholder="Task description..." class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-indigo-500" required>
-                        <div class="flex gap-4">
-                            <input type="date" id="task-date" class="flex-1 p-2 rounded-lg bg-slate-50 dark:bg-slate-800">
-                            <input type="time" id="task-time" class="flex-1 p-2 rounded-lg bg-slate-50 dark:bg-slate-800">
-                            <button type="submit" class="bg-indigo-600 text-white px-8 py-2 rounded-xl font-bold shadow-lg shadow-indigo-200">Add</button>
+            <div class="p-8 flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950">
+                
+                <div id="task-input-section" class="hidden mb-8 max-w-3xl mx-auto">
+                    <form id="task-form" class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm space-y-4 border border-slate-100 dark:border-slate-800">
+                        <input type="text" id="task-input" placeholder="Type a new task..." 
+                               class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl outline-none border border-transparent focus:border-indigo-500 text-lg" required>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="flex-1 min-w-[150px] space-y-1">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Due Date</label>
+                                <input type="date" id="task-date" class="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-sm">
+                            </div>
+                            <div class="flex-1 min-w-[150px] space-y-1">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Time</label>
+                                <input type="time" id="task-time" class="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-sm">
+                            </div>
+                            <div class="flex items-end">
+                                <button type="submit" class="bg-indigo-600 text-white px-10 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition">
+                                    Add Task
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
-                <div id="tasks-container" class="max-w-2xl mx-auto space-y-3">
+
+                <div id="tasks-container" class="max-w-3xl mx-auto space-y-3">
+                    <div class="text-center py-20">
+                        <i class="fas fa-layer-group text-slate-200 text-6xl mb-4"></i>
+                        <p class="text-slate-400 font-medium">Select a collection from the sidebar to start tracking tasks.</p>
                     </div>
+                </div>
             </div>
         </main>
     </div>
 
     <div id="list-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-8 shadow-2xl">
-            <h3 class="text-xl font-bold mb-6">New Collection</h3>
-            <form id="list-modal-form" class="space-y-4">
-                <input type="text" id="modal-list-title" placeholder="Title" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800" required>
-                <textarea id="modal-list-desc" placeholder="Short description" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800"></textarea>
+            <h3 class="text-2xl font-bold mb-6 text-slate-800 dark:text-white">Create Collection</h3>
+            <form id="list-modal-form" class="space-y-5">
+                <input type="text" id="modal-list-title" placeholder="Collection Name (e.g. Work)" 
+                       class="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 outline-none focus:ring-2 focus:ring-indigo-500" required>
+                <textarea id="modal-list-desc" placeholder="Brief description..." 
+                          class="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 outline-none h-24"></textarea>
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="date" id="modal-start-date" class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800">
-                    <input type="date" id="modal-end-date" class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Start Date</label>
+                        <input type="date" id="modal-start-date" class="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Target End</label>
+                        <input type="date" id="modal-end-date" class="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800">
+                    </div>
                 </div>
-                <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="closeListModal()" class="flex-1 p-3 text-slate-500 font-bold">Cancel</button>
-                    <button type="submit" class="flex-1 p-3 bg-indigo-600 text-white rounded-xl font-bold">Create</button>
+                <div class="flex gap-4 pt-4">
+                    <button type="button" onclick="closeListModal()" class="flex-1 p-4 text-slate-500 font-bold hover:bg-slate-100 rounded-2xl transition">Cancel</button>
+                    <button type="submit" class="flex-1 p-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100">Create</button>
                 </div>
             </form>
         </div>
     </div>
 
     <div id="confirm-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl p-6 shadow-2xl text-center">
-            <div id="confirm-icon" class="text-4xl mb-4">🚪</div>
-            <h3 id="confirm-title" class="text-xl font-bold mb-2"></h3>
-            <p id="confirm-msg" class="text-slate-500 text-sm mb-6"></p>
+        <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[2rem] p-8 shadow-2xl text-center">
+            <div id="confirm-icon" class="text-5xl mb-4">🚪</div>
+            <h3 id="confirm-title" class="text-2xl font-bold mb-2 text-slate-800 dark:text-white"></h3>
+            <p id="confirm-msg" class="text-slate-500 text-sm mb-8 leading-relaxed"></p>
             <div class="flex gap-3">
-                <button id="confirm-cancel" class="flex-1 p-2 text-slate-500 font-bold">Cancel</button>
-                <button id="confirm-proceed" class="flex-1 p-2 bg-indigo-600 text-white rounded-lg font-bold">Confirm</button>
+                <button id="confirm-cancel" class="flex-1 p-3 text-slate-400 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">Cancel</button>
+                <button id="confirm-proceed" class="flex-1 p-3 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition shadow-lg shadow-red-100">Confirm</button>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-[-100px] right-5 transition-all duration-300 z-[400]"></div>
+    <div id="toast" class="fixed bottom-[-100px] right-5 transition-all duration-500 z-[400] flex items-center gap-3 bg-slate-800 text-white px-6 py-4 rounded-2xl shadow-2xl font-medium"></div>
 
     <script src="js/api.js"></script>
     <script src="js/app.js"></script>
