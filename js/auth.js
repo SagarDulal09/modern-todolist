@@ -1,72 +1,113 @@
 /**
- * TASKFLOW PRO AUTHENTICATION SYSTEM
- * Developed by Sagar Dulal | © 2026
- * Features: JWT-style Session Management & Google Sync
+ * TASKFLOW PRO - SECURITY & IDENTITY CONTROLLER
+ * Architected by Sagar Dulal | © 2026
+ * Scope: Identity Verification, OTP Protocol, & Session Security
  */
 
-/* ============================================================
-   1. SESSION GATEKEEPER
-   ============================================================ */
+// --- 1. UI TOGGLE LOGIC ---
+function toggleAuth(isRegister) {
+    const loginScreen = document.getElementById('login-screen');
+    const registerScreen = document.getElementById('register-screen');
+    
+    if (isRegister) {
+        loginScreen.classList.add('hidden');
+        registerScreen.classList.remove('hidden');
+    } else {
+        registerScreen.classList.add('hidden');
+        loginScreen.classList.remove('hidden');
+    }
+}
+
+// --- 2. REGISTRATION & OTP PROTOCOL ---
 
 /**
- * Validates the current session status.
- * Called immediately after the preloader finishes in app.js
+ * Dispatches a 6-digit security token to the user's email via the Cloud Engine.
  */
-function checkAuthSession() {
-    const savedUser = localStorage.getItem('todo_user');
-    const authContainer = document.getElementById('auth-container');
-    const appScreen = document.getElementById('app-screen');
+async function requestOTP() {
+    const name = document.getElementById('reg-user').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const pass = document.getElementById('reg-pass').value.trim();
 
-    if (savedUser) {
-        // High-end Transition: Hide Auth, Show App
-        authContainer.classList.add('hidden');
-        appScreen.classList.remove('hidden');
-        
-        // Boot the main application logic
-        if (typeof initApp === "function") {
-            initApp();
+    // Field Validation
+    if (!name || !email || !phone || pass.length < 6) {
+        return showToast("Complete all fields. Password must be 6+ chars.");
+    }
+
+    // Email Validation Regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return showToast("Invalid Email Format");
+
+    const res = await apiRequest({ 
+        action: 'sendOTP', 
+        email: email, 
+        name: name 
+    });
+
+    if (res.success) {
+        document.getElementById('otp-area').classList.remove('hidden');
+        document.getElementById('send-otp-btn').innerText = "Resend Security Token";
+        document.getElementById('send-otp-btn').classList.add('opacity-50');
+        showToast("Verification Token Dispatched");
+    } else {
+        showToast(res.message || "Failed to dispatch token.");
+    }
+}
+
+/**
+ * Validates the OTP and commits the user to the permanent Database.
+ */
+async function verifyAndRegister() {
+    const otp = document.getElementById('reg-otp').value.trim();
+    const name = document.getElementById('reg-user').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const pass = document.getElementById('reg-pass').value.trim();
+
+    if (otp.length !== 6) return showToast("Enter the full 6-digit sequence");
+
+    // Phase 1: Verify Token
+    const verifyRes = await apiRequest({ 
+        action: 'validateOTP', 
+        email: email, 
+        otp: otp 
+    });
+
+    if (verifyRes.success) {
+        // Phase 2: Create User Profile
+        const regRes = await apiRequest({ 
+            action: 'registerUser', 
+            name: name, 
+            email: email, 
+            phone: phone, 
+            pass: pass 
+        });
+
+        if (regRes.success) {
+            localStorage.setItem('todo_user', JSON.stringify({ 
+                id: regRes.userId, 
+                name: name, 
+                email: email 
+            }));
+            showToast("Identity Verified. Initializing...");
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showToast(regRes.message);
         }
     } else {
-        // Reveal Login Screen with Animation
-        authContainer.classList.remove('hidden');
-        appScreen.classList.add('hidden');
-        document.getElementById('login-screen').classList.add('animate-slide-up');
+        showToast(verifyRes.message || "Token Authorization Failed");
     }
 }
 
-/* ============================================================
-   2. INTERFACE TOGGLES
-   ============================================================ */
+// --- 3. LOGIN & ACCESS CONTROL ---
 
-function toggleAuth(showRegister) {
-    const login = document.getElementById('login-screen');
-    const register = document.getElementById('register-screen');
-
-    if (showRegister) {
-        login.classList.add('hidden');
-        register.classList.remove('hidden');
-        register.classList.add('animate-slide-up');
-    } else {
-        register.classList.add('hidden');
-        login.classList.remove('hidden');
-        login.classList.add('animate-slide-up');
-    }
-}
-
-/* ============================================================
-   3. MANUAL AUTHENTICATION LOGIC
-   ============================================================ */
-
-// --- LOGIN SUBMISSION ---
 document.getElementById('login-form').onsubmit = async (e) => {
     e.preventDefault();
     
-    const loginId = document.getElementById('login-id').value;
-    const loginPass = document.getElementById('login-pass').value;
-    const btn = e.target.querySelector('button');
+    const loginId = document.getElementById('login-id').value.trim();
+    const loginPass = document.getElementById('login-pass').value.trim();
 
-    btn.disabled = true;
-    APILoader.show();
+    if (!loginId || !loginPass) return showToast("Credentials required");
 
     const res = await apiRequest({ 
         action: 'loginUser', 
@@ -75,98 +116,56 @@ document.getElementById('login-form').onsubmit = async (e) => {
     });
 
     if (res.success) {
-        // Store User Data Locally
         localStorage.setItem('todo_user', JSON.stringify(res.user));
-        
-        // UI Transition
-        showToast(`Welcome back, ${res.user.name}`);
-        
-        // Trigger page re-validation
-        checkAuthSession();
+        showToast("Access Granted. Redirecting...");
+        setTimeout(() => location.reload(), 1000);
     } else {
-        showToast(res.message || "Invalid Authorization Credentials");
+        showToast(res.message || "Invalid System Credentials");
     }
-    
-    btn.disabled = false;
-    APILoader.hide();
 };
 
-// --- REGISTRATION SUBMISSION ---
-document.getElementById('register-form').onsubmit = async (e) => {
-    e.preventDefault();
-    
-    const pass = document.getElementById('reg-pass').value;
-    const confirm = document.getElementById('reg-confirm').value;
-
-    if (pass !== confirm) {
-        return showToast("Passwords synchronization failed!");
-    }
-
-    const btn = e.target.querySelector('button');
-    btn.disabled = true;
-    APILoader.show();
-
-    const res = await apiRequest({ 
-        action: 'registerUser', 
-        name: document.getElementById('reg-user').value,
-        email: document.getElementById('reg-email').value,
-        phone: document.getElementById('reg-phone').value,
-        pass: pass 
-    });
-
-    if (res.success) {
-        showToast("Account Deployed! You may now login.");
-        toggleAuth(false);
-        e.target.reset();
-    } else {
-        showToast(res.message || "Registration sequence failed.");
-    }
-    
-    btn.disabled = false;
-    APILoader.hide();
-};
-
-/* ============================================================
-   4. GOOGLE IDENTITY SERVICES INTEGRATION
-   ============================================================ */
+// --- 4. THIRD-PARTY IDENTITY (GOOGLE ONE-TAP) ---
 
 /**
- * Native Google Credential Handler
+ * Handles the JWT response from Google's Authentication Servers.
  */
-async function handleCredentialResponse(response) {
+function handleCredentialResponse(response) {
     try {
-        // Decode Google JWT
+        // Decoding the JWT (JSON Web Token) payload
         const base64Url = response.credential.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const payload = JSON.parse(decodeURIComponent(atob(base64).split('').map(c => {
+        const payload = JSON.parse(decodeURIComponent(atob(base64).split('').map(function(c) {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join('')));
-        
-        const googleData = {
-            id: payload.sub,
+
+        // Store Google Identity
+        localStorage.setItem('todo_user', JSON.stringify({
+            id: "G-" + payload.sub,
             name: payload.name,
             email: payload.email,
-            picture: payload.picture
-        };
+            avatar: payload.picture
+        }));
 
-        APILoader.show();
-        showToast("Syncing Google Cloud Account...");
+        showToast("Signed in via Google Node");
+        setTimeout(() => location.reload(), 1000);
 
-        const res = await apiRequest({ action: 'syncUser', user: googleData });
-
-        if (res.success) {
-            localStorage.setItem('todo_user', JSON.stringify(res.user));
-            showToast(`Verified: ${res.user.name}`);
-            
-            // Full refresh to ensure Google session headers are active
-            location.reload();
-        }
     } catch (err) {
-        console.error("G-Auth Error:", err);
-        showToast("Google Authentication Timeout.");
-    } finally {
-        APILoader.hide();
+        console.error("Google Auth Decode Error:", err);
+        showToast("External Identity Sync Failed");
     }
 }
 
-console.log("%c Auth Module Secured ", "background: #10b981; color: #fff; border-radius: 4px;");
+// --- 5. SESSION SECURITY ---
+
+/**
+ * Terminate session and clear sensitive local caches.
+ */
+function confirmLogout() {
+    // Custom styled confirmation would go here
+    if (confirm("Are you sure you want to terminate the secure session?")) {
+        localStorage.removeItem('todo_user');
+        // Clear active list state to prevent data leak on re-login
+        localStorage.removeItem('tf_active_list'); 
+        location.reload();
+    }
+}
