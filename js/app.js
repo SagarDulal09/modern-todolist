@@ -1,231 +1,177 @@
 /* ============================================================
-   1. GLOBAL STATE & INITIALIZATION
+   1. PRELOADER & INITIALIZATION
    ============================================================ */
-let currentActiveListId = null;
+window.addEventListener('load', () => {
+    let perc = 0;
+    const bar = document.getElementById('loader-progress');
+    const text = document.getElementById('loader-perc');
+    const preloader = document.getElementById('preloader');
+    
+    // Smooth loading animation sync
+    const interval = setInterval(() => {
+        // Random increments to look like a real process
+        perc += Math.floor(Math.random() * 15) + 2;
+        
+        if (perc >= 100) {
+            perc = 100;
+            clearInterval(interval);
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                setTimeout(() => preloader.classList.add('hidden'), 500);
+                checkSession();
+            }, 400);
+        }
+        
+        if(bar) bar.style.width = perc + '%';
+        if(text) text.innerText = perc + '%';
+    }, 60);
+});
 
-// Initialize the app logic
+function checkSession() {
+    const savedUser = localStorage.getItem('todo_user');
+    if (savedUser) {
+        document.getElementById('auth-container').classList.add('hidden');
+        document.getElementById('app-screen').classList.remove('hidden');
+        initApp();
+    }
+}
+
 function initApp() {
-    console.log("TaskFlow Initialized");
     applyTheme();
     loadLists();
 }
 
 /* ============================================================
-   2. LIST / COLLECTION MANAGEMENT
+   2. COLLECTION / LIST MANAGEMENT
    ============================================================ */
+let currentActiveListId = null;
 
-// Fetch all lists for the logged-in user from the database
 async function loadLists() {
     const user = JSON.parse(localStorage.getItem('todo_user'));
     const container = document.getElementById('lists-container');
-    
     if (!user || !container) return;
 
     const res = await apiRequest({ action: 'getLists', userId: user.id });
-    container.innerHTML = ""; // Clear current sidebar
+    container.innerHTML = "";
 
-    if (res.success && res.data && res.data.length > 0) {
+    if (res.success && res.data) {
         res.data.forEach(list => {
             const div = document.createElement('div');
-            div.className = "group flex items-center justify-between p-4 mb-2 bg-white dark:bg-slate-800 rounded-2xl cursor-pointer border border-transparent hover:border-indigo-500 shadow-sm transition-all";
-            
+            div.className = "group p-4 bg-white dark:bg-slate-800 rounded-2xl cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all border border-transparent hover:border-indigo-200";
             div.innerHTML = `
-                <div class="overflow-hidden">
-                    <h4 class="font-bold text-sm truncate dark:text-white">${list.list_title}</h4>
-                    <p class="text-[10px] text-slate-400 truncate">${list.description || 'No description'}</p>
+                <div class="flex justify-between items-center">
+                    <div class="overflow-hidden">
+                        <h4 class="font-bold text-sm truncate dark:text-white">${list.list_title}</h4>
+                        <p class="text-[10px] text-slate-400 truncate">${list.description || 'Quick Collection'}</p>
+                    </div>
+                    <i class="fas fa-chevron-right text-[10px] text-indigo-300"></i>
                 </div>
-                <i class="fas fa-chevron-right text-[10px] text-slate-300 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all"></i>
             `;
-            
-            // Set the click event to load this list's tasks
             div.onclick = () => selectList(list.list_id, list.list_title);
             container.appendChild(div);
         });
-    } else {
-        container.innerHTML = `<p class="text-[10px] text-slate-400 text-center py-6">No collections found.</p>`;
     }
 }
 
-// When a user clicks a collection in the sidebar
-async function selectList(id, title) {
+function selectList(id, title) {
     currentActiveListId = id;
-    
-    // UI: Update Title and show the hidden task input form
-    const titleHeader = document.getElementById('active-list-title');
-    const inputSection = document.getElementById('task-input-section');
-    
-    if (titleHeader) titleHeader.innerText = title;
-    if (inputSection) inputSection.classList.remove('hidden');
-    
-    // Fetch and render tasks for this list
+    document.getElementById('active-list-title').innerText = title;
+    document.getElementById('task-input-section').classList.remove('hidden');
     loadTasks();
 }
 
-// Handle the "New Collection" Modal Submission
-document.getElementById('list-modal-form').onsubmit = async (e) => {
-    e.preventDefault();
-    const user = JSON.parse(localStorage.getItem('todo_user'));
-
-    const payload = {
-        action: 'addList',
-        userId: user.id,
-        title: document.getElementById('modal-list-title').value,
-        description: document.getElementById('modal-list-desc').value,
-        startDate: document.getElementById('modal-start-date').value,
-        endDate: document.getElementById('modal-end-date').value
-    };
-
-    showToast("Creating collection...");
-    const res = await apiRequest(payload);
-    
-    if (res.success) {
-        closeListModal();
-        loadLists(); // Refresh sidebar
-        showToast("Success! Collection added.");
-    } else {
-        showToast("Error creating collection", "error");
-    }
-};
-
 /* ============================================================
-   3. TASK MANAGEMENT
+   3. TASK MANAGEMENT (ADVANCED)
    ============================================================ */
 
-// Fetch tasks associated with the currentActiveListId
 async function loadTasks() {
     const container = document.getElementById('tasks-container');
-    if (!currentActiveListId || !container) return;
+    if (!currentActiveListId) return;
 
-    container.innerHTML = `<div class="text-center py-10"><i class="fas fa-spinner fa-spin text-indigo-500"></i></div>`;
+    container.innerHTML = `<div class="py-20 text-center"><i class="fas fa-circle-notch fa-spin text-indigo-500 text-3xl"></i></div>`;
     
     const res = await apiRequest({ action: 'getTasks', listId: currentActiveListId });
-    container.innerHTML = ""; // Clear loader
+    container.innerHTML = "";
 
-    if (res.success && res.data && res.data.length > 0) {
+    if (res.success && res.data.length > 0) {
         res.data.forEach(task => {
-            const item = document.createElement('div');
-            item.className = "flex items-center gap-4 p-5 bg-white dark:bg-slate-900 rounded-[1.5rem] shadow-sm border border-transparent hover:border-indigo-100 transition-all";
+            const statusClass = task.status.toLowerCase().replace(/\s+/g, '-');
+            const card = document.createElement('div');
+            card.className = "bg-white dark:bg-slate-900 p-6 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center gap-4";
             
-            const isDone = task.status === 'Completed';
-            
-            item.innerHTML = `
-                <input type="checkbox" ${isDone ? 'checked' : ''} 
-                       onchange="updateTaskStatus('${task.task_id}', this.checked)" 
-                       class="w-5 h-5 accent-indigo-600">
+            card.innerHTML = `
                 <div class="flex-1">
-                    <p class="font-medium ${isDone ? 'line-through text-slate-400' : 'text-slate-700 dark:text-white'}">
-                        ${task.task_text}
-                    </p>
-                    <div class="flex gap-4 mt-1">
-                        <span class="text-[10px] text-slate-400"><i class="far fa-calendar-alt mr-1"></i>${task.due_date || 'No date'}</span>
-                        <span class="text-[10px] text-slate-400"><i class="far fa-clock mr-1"></i>${task.due_time || 'No time'}</span>
+                    <div class="flex justify-between items-start gap-4 mb-3">
+                        <h3 class="font-bold text-slate-800 dark:text-white">${task.task_text}</h3>
+                        <span class="status-pill status-${statusClass}">${task.status}</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="text-[11px] text-slate-500"><i class="far fa-calendar-alt mr-1 text-indigo-500"></i> ${task.due_date}</div>
+                        <div class="text-[11px] text-slate-500"><i class="far fa-clock mr-1 text-indigo-500"></i> ${task.due_time_start} - ${task.due_time_end}</div>
+                        ${task.sec_time_start ? 
+                          `<div class="text-[11px] text-slate-500"><i class="fas fa-history mr-1 text-purple-500"></i> ${task.sec_time_start} - ${task.sec_time_end}</div>` 
+                          : ''}
                     </div>
                 </div>
             `;
-            container.appendChild(item);
+            container.appendChild(card);
         });
     } else {
-        container.innerHTML = `
-            <div class="text-center py-20">
-                <p class="text-slate-400">This collection is empty. Add a task above!</p>
-            </div>
-        `;
+        container.innerHTML = `<div class="text-center py-20 text-slate-400">No tasks found in this collection.</div>`;
     }
 }
 
-// Add a New Task to the database
 document.getElementById('task-form').onsubmit = async (e) => {
     e.preventDefault();
-    
-    const textInput = document.getElementById('task-input');
-    const dateInput = document.getElementById('task-date');
-    const timeInput = document.getElementById('task-time');
+    const btn = e.target.querySelector('button');
+    btn.disabled = true;
 
     const payload = {
         action: 'addTask',
         listId: currentActiveListId,
-        text: textInput.value,
-        status: 'Pending',
-        dueDate: dateInput.value,
-        dueTime: timeInput.value
+        text: document.getElementById('task-input').value,
+        status: document.getElementById('task-status').value,
+        dueDate: document.getElementById('task-date').value,
+        startTime: document.getElementById('task-time-start').value,
+        endTime: document.getElementById('task-time-end').value,
+        secStart: document.getElementById('task-sec-start').value,
+        secEnd: document.getElementById('task-sec-end').value
     };
 
-    showToast("Saving task...");
+    showToast("Syncing with Database...");
     const res = await apiRequest(payload);
     
     if (res.success) {
-        textInput.value = ""; // Clear input
-        loadTasks(); // Refresh list
-        showToast("Task added!");
+        e.target.reset();
+        loadTasks();
+        showToast("Task Secured Successfully!");
     }
+    btn.disabled = false;
 };
 
-// Toggle Task status (Pending vs Completed)
-async function updateTaskStatus(taskId, isChecked) {
-    const newStatus = isChecked ? 'Completed' : 'Pending';
-    const res = await apiRequest({ 
-        action: 'updateTaskStatus', 
-        taskId: taskId, 
-        status: newStatus 
-    });
-    
-    if (res.success) {
-        loadTasks(); // Refresh UI to apply line-through
-    }
-}
-
 /* ============================================================
-   4. UI MODALS & SYSTEM HELPERS
+   4. UI UTILITIES & BRANDING
    ============================================================ */
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg;
+    t.style.bottom = '30px';
+    setTimeout(() => { t.style.bottom = '-100px'; }, 3000);
+}
 
 function openListModal() { document.getElementById('list-modal').classList.remove('hidden'); }
-function closeListModal() { 
-    document.getElementById('list-modal').classList.add('hidden'); 
-    document.getElementById('list-modal-form').reset(); 
-}
+function closeListModal() { document.getElementById('list-modal').classList.add('hidden'); }
 
-function showToast(msg, type = 'success') {
-    const toast = document.getElementById('toast');
-    toast.innerText = msg;
-    toast.className = `fixed bottom-5 right-5 text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-500 z-[400] ${type === 'error' ? 'bg-red-600' : 'bg-slate-800'}`;
-    toast.style.bottom = '24px';
-    setTimeout(() => { toast.style.bottom = '-100px'; }, 3000);
-}
-
-// Custom Web-Style Confirmation
-function customConfirm(title, msg, onConfirm) {
-    const modal = document.getElementById('confirm-modal');
-    document.getElementById('confirm-title').innerText = title;
-    document.getElementById('confirm-msg').innerText = msg;
-    modal.classList.remove('hidden');
-
-    document.getElementById('confirm-cancel').onclick = () => modal.classList.add('hidden');
-    document.getElementById('confirm-proceed').onclick = () => {
-        onConfirm();
-        modal.classList.add('hidden');
-    };
-}
-
-function confirmLogout() {
-    customConfirm("Logout", "Are you sure you want to end your session?", () => {
-        localStorage.removeItem('todo_user');
-        window.location.reload();
-    });
-}
-
-/* ============================================================
-   5. THEME MANAGEMENT
-   ============================================================ */
 function applyTheme() {
     const isDark = localStorage.getItem('theme') === 'dark';
     const btn = document.getElementById('theme-toggle');
-    
     if (isDark) {
         document.body.classList.add('dark-mode');
-        if (btn) btn.innerHTML = '<i class="fas fa-sun"></i>';
+        btn.innerHTML = '<i class="fas fa-sun text-yellow-400"></i>';
     } else {
         document.body.classList.remove('dark-mode');
-        if (btn) btn.innerHTML = '<i class="fas fa-moon"></i>';
+        btn.innerHTML = '<i class="fas fa-moon"></i>';
     }
 }
 
@@ -234,3 +180,13 @@ document.getElementById('theme-toggle').onclick = () => {
     localStorage.setItem('theme', isDark ? 'light' : 'dark');
     applyTheme();
 };
+
+function confirmLogout() {
+    if(confirm("Sagar Dulal says: Are you sure you want to log out?")) {
+        localStorage.removeItem('todo_user');
+        location.reload();
+    }
+}
+
+// Copyright Log for Developer
+console.log("%c © 2026 Sagar Dulal. All Rights Reserved. ", "background: #6366f1; color: #fff; border-radius: 5px;");
