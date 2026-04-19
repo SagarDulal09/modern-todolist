@@ -1,216 +1,256 @@
+/* * TASKFLOW PRO - MASTER ARCHITECTURAL STYLESHEET
+ * Developed by Sagar Dulal | © 2026
+ * Design System: Glass-Neon Hybrid (Enterprise Standard)
+ */
+
 /* ============================================================
-   1. ARCHITECTURAL VARIABLES (NEON SYSTEMS)
+   1. ROOT VARIABLES (NEON-MIDNIGHT SYSTEM)
    ============================================================ */
 :root {
-    /* White Neon Theme (Light) */
-    --bg-main: #f8fafc;
-    --bg-sidebar: rgba(255, 255, 255, 0.8);
-    --card-bg: #ffffff;
-    --accent: #6366f1; /* Indigo */
-    --accent-glow: rgba(99, 102, 241, 0.2);
-    --text-head: #0f172a; /* Deep Slate */
-    --text-body: #475569; /* Muted Slate */
+    /* White Neon Theme (Light Mode) */
+    --bg-main: hwb(210 97% 2%);    /* Clean slate white */
+    --bg-sidebar: rgba(255, 255, 255, 0.7);
+    --bg-card: #ffffff;
+    --text-primary: #0f172a;       /* Deep slate for readability */
+    --text-secondary: #64748b;
+    --accent: #6366f1;             /* Indigo Neon */
+    --accent-glow: rgba(99, 102, 241, 0.15);
     --border: #e2e8f0;
-    --input-bg: #ffffff;
+    --input-fill: #ffffff;
+    --glass-blur: blur(16px);
 }
 
 body.dark-mode {
-    /* Blue Neon Theme (Dark) */
-    --bg-main: #020617; /* Midnight Black */
+    /* Blue/Sky Neon Theme (Dark Mode) */
+    --bg-main: #020617;            /* True Midnight */
     --bg-sidebar: rgba(7, 14, 36, 0.8);
-    --card-bg: #0f172a; /* Navy Slate */
-    --accent: #38bdf8; /* Sky Blue Neon */
-    --accent-glow: rgba(56, 189, 248, 0.3);
-    --text-head: #f8fafc; /* Ghost White */
-    --text-body: #94a3b8; /* Cool Grey */
+    --bg-card: #0f172a;            /* Navy Slate */
+    --text-primary: #ffffff;       /* Pure white headers */
+    --text-secondary: #94a3b8;     /* Cool grey text */
+    --accent: #38bdf8;             /* Sky Blue Neon */
+    --accent-glow: rgba(56, 189, 248, 0.25);
     --border: #1e293b;
-    --input-bg: #1e293b;
+    --input-fill: #070e24;
 }
 
 /* ============================================================
-   2. GLOBAL RESET & BASE
+   2. GLOBAL RESET & TYPOGRAPHY
    ============================================================ */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 body {
     background-color: var(--bg-main);
-    color: var(--text-body);
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden; /* Main scroll handled by workspace */
+    color: var(--text-primary);
+    transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
+    height: 100vh;
+    overflow: hidden;
 }
 
 /* ============================================================
-   3. HIGH-END UI COMPONENTS (GLASSMORPHISM)
+   3. PROFESSIONAL UI COMPONENTS
    ============================================================ */
-.glass-card {
-    background: var(--card-bg);
+
+/* The Glassmorphism Panel */
+.glass-panel {
+    background: var(--bg-sidebar);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--border);
-    border-radius: 28px;
-    box-shadow: 0 10px 40px -10px var(--accent-glow);
-    transition: all 0.3s ease;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
 }
 
+/* Custom Task Card with Hover Interaction */
+.task-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 2.5rem;
+    padding: 2rem;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.task-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    border-color: var(--accent);
+    box-shadow: 0 20px 40px -10px var(--accent-glow);
+}
+
+/* High-End Inputs */
 .modern-input {
     width: 100%;
-    padding: 1rem 1.25rem;
-    background: var(--input-bg);
-    border: 1.5px solid var(--border);
-    border-radius: 18px;
-    color: var(--text-head);
-    outline: none;
+    background-color: var(--input-fill);
+    border: 2px solid var(--border);
+    border-radius: 1.25rem;
+    color: var(--text-primary);
+    padding: 1rem 1.5rem;
     font-size: 0.95rem;
+    font-weight: 500;
     transition: all 0.3s ease;
+    outline: none;
 }
 
 .modern-input:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 15px var(--accent-glow);
+    box-shadow: 0 0 0 4px var(--accent-glow);
 }
 
 .input-label {
     display: block;
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.15em;
-    margin-bottom: 0.5rem;
-    margin-left: 0.25rem;
-    color: var(--text-body);
+    margin-bottom: 0.75rem;
+    margin-left: 0.5rem;
+    color: var(--text-secondary);
 }
 
 /* ============================================================
-   4. STATUS NEON BADGES
+   4. STATUS PILLS (NEON BADGES)
    ============================================================ */
 .status-pill {
-    display: inline-flex;
-    padding: 6px 16px;
-    border-radius: 12px;
+    padding: 0.5rem 1.25rem;
+    border-radius: 1rem;
     font-size: 10px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border: 1px solid transparent;
 }
 
 .status-not-started { background: rgba(148, 163, 184, 0.1); color: #64748b; }
-.status-in-progress { background: rgba(56, 189, 248, 0.1); color: var(--accent); border-color: var(--accent); }
+.status-in-progress { background: rgba(99, 102, 241, 0.1); color: #6366f1; border: 1px solid rgba(99, 102, 241, 0.2); }
 .status-completed { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
 .status-delayed { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
 /* ============================================================
-   5. SOCIAL & BRANDING (SAGAR DULAL EDITION)
+   5. SOCIAL BRANDING (SAGAR DULAL SIGNATURE)
    ============================================================ */
-.social-icon {
-    width: 40px;
-    height: 40px;
+.social-btn {
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 14px;
-    background: var(--card-bg);
+    background: var(--bg-card);
     border: 1px solid var(--border);
-    color: var(--text-body);
+    color: var(--text-secondary);
     text-decoration: none;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-.social-icon:hover {
-    color: #fff;
+.social-btn:hover {
     background: var(--accent);
-    transform: translateY(-5px) rotate(8deg);
+    color: white;
+    transform: rotate(10deg) translateY(-5px);
     box-shadow: 0 10px 20px var(--accent-glow);
-    border-color: transparent;
 }
-
-/* =webkit Custom Scrollbar */
-.custom-scroll::-webkit-scrollbar { width: 5px; }
-.custom-scroll::-webkit-scrollbar-track { background: transparent; }
-.custom-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-.custom-scroll::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
 /* ============================================================
-   6. RESPONSIVE DESIGN BREAKPOINTS
+   6. RESPONSIVE ARCHITECTURE (MOBILE TO 4K)
    ============================================================ */
 
-/* Tablet (Medium) */
+/* Tablet & Smaller Desktop */
 @media (max-width: 1024px) {
     aside {
         width: 100px !important;
         padding: 2rem 1rem !important;
     }
     aside span, aside p { display: none; }
-    main { padding: 0; }
+    header { padding: 0 2rem !important; }
 }
 
-/* Mobile (Small) */
+/* Mobile Devices (iPhone/Android Standard) */
 @media (max-width: 768px) {
-    #app-screen { flex-direction: column; }
-    
+    #app-screen {
+        flex-direction: column;
+    }
+
     aside {
         width: 100% !important;
         height: auto !important;
         border-right: none !important;
         border-bottom: 1px solid var(--border);
-        padding: 1rem !important;
-    }
-
-    header { px: 1.5rem !important; }
-
-    #lists-container {
-        display: flex;
-        overflow-x: auto;
-        padding-bottom: 10px;
-        gap: 1rem;
-    }
-
-    #lists-container div {
-        min-width: 200px;
-        margin-bottom: 0 !important;
-    }
-
-    .mt-auto { display: none; } /* Socials move to main footer on mobile if needed */
-    
-    #task-form {
+        flex-direction: row !important;
+        justify-content: space-between !important;
         padding: 1.5rem !important;
-        gap: 1.5rem !important;
+    }
+
+    aside nav, aside div.mt-8 { display: none; } /* Hide heavy elements in mobile side-nav */
+    
+    main {
+        padding: 0 !important;
+    }
+
+    header {
+        height: auto !important;
+        padding: 1.5rem !important;
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
+
+    .glass-panel {
+        padding: 2rem !important;
+        border-radius: 2rem !important;
+    }
+
+    #task-form .grid {
+        grid-template-cols: 1fr !important;
+    }
+}
+
+/* Small Phone Fixes */
+@media (max-width: 480px) {
+    .task-card {
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+    }
+    
+    .modern-input {
+        font-size: 16px; /* Prevents iOS browser zooming */
     }
 }
 
 /* ============================================================
-   7. ANIMATIONS
+   7. UTILITIES & ANIMATIONS
    ============================================================ */
+.custom-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(30px); }
+    from { opacity: 0; transform: translateY(40px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-slide-up {
-    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-/* Task Card Hover State */
-#tasks-container > div:hover {
-    transform: translateY(-8px) scale(1.02);
-    border-color: var(--accent);
-    background: var(--bg-sidebar);
-}
-
-/* ============================================================
-   8. VISIBILITY OVERRIDES (NEON FIX)
-   ============================================================ */
-body.dark-mode h1, 
+/* Full Visibility for Headers in Moon Phase */
 body.dark-mode h2, 
 body.dark-mode h3, 
-body.dark-mode h4,
-body.dark-mode p.font-bold {
-    color: #ffffff !important; /* Force high visibility for headers in dark mode */
-}
-
-body.dark-mode .modern-input::placeholder {
-    color: #475569;
+body.dark-mode .text-slate-900 {
+    color: #ffffff !important;
+    font-weight: 900;
 }
