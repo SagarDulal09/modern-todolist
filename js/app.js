@@ -35,13 +35,57 @@ function closeListModal() {
     }
 }
 
-/* --- LOGOUT LOGIC --- */
+// --- NEW: WEB-MODE CONFIRMATION BOX ---
+function customConfirm(title, msg, icon, onConfirm) {
+    const modal = document.getElementById('confirm-modal');
+    document.getElementById('confirm-title').innerText = title;
+    document.getElementById('confirm-msg').innerText = msg;
+    document.getElementById('confirm-icon').innerHTML = icon; // e.g., "❓" or "⚠️"
+    
+    modal.classList.remove('hidden');
+
+    // Cancel button
+    document.getElementById('confirm-cancel').onclick = () => modal.classList.add('hidden');
+
+    // Proceed button
+    document.getElementById('confirm-proceed').onclick = () => {
+        modal.classList.add('hidden');
+        onConfirm();
+    };
+}
+
+// Updated Logout
 function confirmLogout() {
-    if (confirm("Are you sure you want to log out?")) {
+    customConfirm("Logging Out", "Are you sure you want to end your session?", "🚪", () => {
         localStorage.removeItem('todo_user');
         window.location.reload();
-    }
+    });
 }
+
+// --- UPDATED TASK SUBMISSION (Fixes Database Display) ---
+document.getElementById('task-form').onsubmit = async (e) => {
+    e.preventDefault();
+    
+    const payload = {
+        action: 'addTask',
+        listId: currentListId, // Global variable from when you clicked a list
+        text: document.getElementById('task-input').value,
+        status: 'Pending',
+        dueDate: document.getElementById('task-date').value,
+        dueTime: document.getElementById('task-time').value
+    };
+
+    showToast("Syncing with database...");
+    
+    const res = await apiRequest(payload);
+    if (res.success) {
+        showToast("Task saved!");
+        document.getElementById('task-form').reset();
+        loadTasks(); // This refreshes the web view immediately
+    } else {
+        showToast("Database Error", "error");
+    }
+};
 
 /* --- TOAST LOGIC --- */
 function showToast(msg, type = 'success') {
