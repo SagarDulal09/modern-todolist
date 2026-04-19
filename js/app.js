@@ -86,7 +86,52 @@ document.getElementById('task-form').onsubmit = async (e) => {
         showToast("Error saving task", "error");
     }
 };
+async function loadLists() {
+    const user = JSON.parse(localStorage.getItem('todo_user'));
+    if (!user) return;
 
+    // Fetch lists for THIS specific user
+    const res = await apiRequest({ action: 'getLists', userId: user.id });
+    
+    const container = document.getElementById('lists-container'); // Ensure this ID exists in your HTML
+    if (!container) return;
+    
+    container.innerHTML = ""; // Clear old lists
+
+    if (res.success && res.data) {
+        res.data.forEach(list => {
+            const div = document.createElement('div');
+            div.className = "p-3 mb-2 bg-slate-100 dark:bg-slate-800 rounded-lg cursor-pointer hover:bg-indigo-100 transition";
+            div.innerHTML = `<h4 class="font-bold">${list.title}</h4><p class="text-xs text-slate-500">${list.description}</p>`;
+            div.onclick = () => selectList(list.id, list.title);
+            container.appendChild(div);
+        });
+    }
+}
+
+// Call this immediately after a successful add
+document.getElementById('list-modal-form').onsubmit = async (e) => {
+    e.preventDefault();
+    const user = JSON.parse(localStorage.getItem('todo_user'));
+    
+    const payload = {
+        action: 'addList',
+        userId: user.id,
+        title: document.getElementById('modal-list-title').value,
+        description: document.getElementById('modal-list-desc').value,
+        startDate: document.getElementById('modal-start-date').value,
+        endDate: document.getElementById('modal-end-date').value,
+        startTime: document.getElementById('modal-start-time').value,
+        endTime: document.getElementById('modal-end-time').value
+    };
+
+    const res = await apiRequest(payload);
+    if (res.success) {
+        showToast("Collection Created!");
+        closeListModal();
+        loadLists(); // <--- THIS REFRESHES THE PAGE
+    }
+};
 /* --- TOAST LOGIC --- */
 function showToast(msg, type = 'success') {
     const toast = document.getElementById('toast');
