@@ -6,7 +6,7 @@
 
 const API_CONFIG = {
     // ⚠️ CRITICAL: Replace with your deployed Web App URL from Google Apps Script
-    URL: "https://script.google.com/macros/s/AKfycbxBnJA-bySZumgVenlMExqcVZUsUSdo3Efxywx_lHL6pFeNXQ6Uxg4bUz2fwKYw9ohJaw/exec", 
+    URL: "https://script.google.com/macros/s/AKfycbx679qgSU8Nz95hDDJJdiXW8H8ZJRNciAMKeBvgNwjgkpY91XTPuVP8wWPevTN7YWl-JA/exec", 
     TIMEOUT_MS: 30000, // 30s timeout for stability in low-bandwidth areas
     RETRIES: 2
 };
