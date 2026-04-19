@@ -1,30 +1,39 @@
-/* ============================================================
-   1. SESSION MANAGEMENT (Check on Page Load)
-   ============================================================ */
-
-window.addEventListener('load', () => {
-    const savedUser = localStorage.getItem('todo_user');
-    
-    // If user is already logged in, skip the login screen
-    if (savedUser) {
-        document.getElementById('auth-container').classList.add('hidden');
-        document.getElementById('app-screen').classList.remove('hidden');
-        
-        // Initialize the app logic from app.js
-        if (typeof initApp === "function") {
-            initApp();
-        }
-    }
-});
+/**
+ * TaskFlow Authentication Handler
+ * Developed by Sagar Dulal | © 2026
+ */
 
 /* ============================================================
-   2. UI TOGGLES
+   1. SESSION INITIALIZATION
    ============================================================ */
 
 /**
- * Switch between Login and Register screens
- * @param {Boolean} showRegister - True to show register, False for login
+ * Checks if a user is already logged in. 
+ * This is called after the preloader finishes in app.js
  */
+function checkAuthSession() {
+    const savedUser = localStorage.getItem('todo_user');
+    const authContainer = document.getElementById('auth-container');
+    const appScreen = document.getElementById('app-screen');
+
+    if (savedUser) {
+        authContainer.classList.add('hidden');
+        appScreen.classList.remove('hidden');
+        
+        // Initialize the main app logic
+        if (typeof initApp === "function") {
+            initApp();
+        }
+    } else {
+        authContainer.classList.remove('hidden');
+        appScreen.classList.add('hidden');
+    }
+}
+
+/* ============================================================
+   2. UI TOGGLES (Login <-> Register)
+   ============================================================ */
+
 function toggleAuth(showRegister) {
     const loginScreen = document.getElementById('login-screen');
     const registerScreen = document.getElementById('register-screen');
@@ -39,17 +48,19 @@ function toggleAuth(showRegister) {
 }
 
 /* ============================================================
-   3. AUTHENTICATION ACTIONS
+   3. AUTHENTICATION LOGIC
    ============================================================ */
 
-// HANDLE LOGIN
+// --- LOGIN HANDLER ---
 document.getElementById('login-form').onsubmit = async (e) => {
     e.preventDefault();
     
     const loginId = document.getElementById('login-id').value;
     const loginPass = document.getElementById('login-pass').value;
+    const submitBtn = e.target.querySelector('button');
 
-    if (typeof showToast === "function") showToast("Authenticating...");
+    submitBtn.disabled = true;
+    showToast("Verifying Credentials...");
 
     const res = await apiRequest({ 
         action: 'loginUser', 
@@ -58,22 +69,21 @@ document.getElementById('login-form').onsubmit = async (e) => {
     });
 
     if (res.success) {
-        // Store user data in browser memory
         localStorage.setItem('todo_user', JSON.stringify(res.user));
         
-        // Switch screens
+        // UI Transition
         document.getElementById('auth-container').classList.add('hidden');
         document.getElementById('app-screen').classList.remove('hidden');
         
-        // Start the app
-        initApp();
-        if (typeof showToast === "function") showToast(`Welcome back, ${res.user.name}!`);
+        showToast(`Welcome, ${res.user.name}`);
+        initApp(); // Start loading user data
     } else {
-        if (typeof showToast === "function") showToast(res.message || "Login failed", "error");
+        showToast(res.message || "Invalid Login Details", "error");
     }
+    submitBtn.disabled = false;
 };
 
-// HANDLE REGISTRATION
+// --- REGISTRATION HANDLER ---
 document.getElementById('register-form').onsubmit = async (e) => {
     e.preventDefault();
     
@@ -83,12 +93,11 @@ document.getElementById('register-form').onsubmit = async (e) => {
     const pass = document.getElementById('reg-pass').value;
     const confirm = document.getElementById('reg-confirm').value;
 
-    // Basic Validation
     if (pass !== confirm) {
         return showToast("Passwords do not match!", "error");
     }
 
-    if (typeof showToast === "function") showToast("Creating account...");
+    showToast("Creating Your Account...");
 
     const res = await apiRequest({ 
         action: 'registerUser', 
@@ -96,44 +105,48 @@ document.getElementById('register-form').onsubmit = async (e) => {
     });
 
     if (res.success) {
-        showToast("Registration successful! Please login.");
-        toggleAuth(false); // Send user back to login screen
-        document.getElementById('register-form').reset();
+        showToast("Registration Successful! Please Login.");
+        toggleAuth(false); // Switch to login screen
+        e.target.reset();
     } else {
-        showToast(res.message || "Registration failed", "error");
+        showToast(res.message || "Registration Failed", "error");
     }
 };
 
 /* ============================================================
-   4. GOOGLE ONE-TAP / SIGN-IN
+   4. GOOGLE ONE-TAP AUTHENTICATION
    ============================================================ */
 
 /**
- * Triggered by the Google Identity Services script in index.html
+ * Handles the response from the Google Identity Services
  */
 async function handleCredentialResponse(response) {
     try {
-        // Decode the JWT token from Google
+        // Decode the Google JWT Token
         const payload = JSON.parse(atob(response.credential.split('.')[1]));
         
-        const userData = {
+        const googleUser = {
             id: payload.sub,
             name: payload.name,
             email: payload.email,
             picture: payload.picture
         };
 
-        if (typeof showToast === "function") showToast("Syncing Google Account...");
+        showToast("Syncing Google Account...");
 
-        // Tell the database about this Google user
-        const res = await apiRequest({ action: 'syncUser', user: userData });
+        const res = await apiRequest({ action: 'syncUser', user: googleUser });
 
         if (res.success) {
             localStorage.setItem('todo_user', JSON.stringify(res.user));
-            location.reload(); // Refresh to enter app
+            showToast(`Connected as ${res.user.name}`);
+            
+            // Reload to apply all session settings
+            location.reload();
         }
-    } catch (e) {
-        console.error("Google Auth Error:", e);
-        if (typeof showToast === "function") showToast("Google Login failed", "error");
+    } catch (error) {
+        console.error("Google Auth Error:", error);
+        showToast("Google Authentication Failed", "error");
     }
 }
+
+console.log("Auth Module Loaded | Powered by Sagar Dulal");
