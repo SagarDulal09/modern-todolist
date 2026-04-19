@@ -6,28 +6,59 @@
 // Initialize Theme on Load
 const themeBtn = document.getElementById('theme-toggle');
 
+// --- THEME TOGGLE LOGIC ---
 function applyTheme() {
     const isDark = localStorage.getItem('theme') === 'dark';
     if (isDark) {
         document.body.classList.add('dark-mode');
+        const themeBtn = document.getElementById('theme-toggle');
         if (themeBtn) themeBtn.innerHTML = '<i class="fas fa-sun"></i>';
     } else {
         document.body.classList.remove('dark-mode');
+        const themeBtn = document.getElementById('theme-toggle');
         if (themeBtn) themeBtn.innerHTML = '<i class="fas fa-moon"></i>';
     }
 }
 
+// Toggle Function
+const themeBtn = document.getElementById('theme-toggle');
 if (themeBtn) {
     themeBtn.onclick = () => {
         const isCurrentlyDark = document.body.classList.contains('dark-mode');
-        if (isCurrentlyDark) {
-            localStorage.setItem('theme', 'light');
-        } else {
-            localStorage.setItem('theme', 'dark');
-        }
+        localStorage.setItem('theme', isCurrentlyDark ? 'light' : 'dark');
         applyTheme();
     };
 }
+
+// --- MODAL CONTROLS ---
+function openListModal() {
+    const modal = document.getElementById('list-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+    } else {
+        console.error("Error: list-modal element not found in HTML.");
+    }
+}
+
+function closeListModal() {
+    const modal = document.getElementById('list-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.getElementById('list-modal-form').reset();
+    }
+}
+
+// --- LOGOUT WITH CONFIRMATION ---
+function confirmLogout() {
+    const confirmAction = confirm("Are you sure you want to log out?");
+    if (confirmAction) {
+        localStorage.removeItem('todo_user');
+        window.location.reload(); // Refresh to show login screen
+    }
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', applyTheme);
 
 // Run immediately
 applyTheme();
