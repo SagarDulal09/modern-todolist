@@ -1,15 +1,16 @@
 /**
- * TaskFlow Authentication Handler
+ * TASKFLOW PRO AUTHENTICATION SYSTEM
  * Developed by Sagar Dulal | © 2026
+ * Features: JWT-style Session Management & Google Sync
  */
 
 /* ============================================================
-   1. SESSION INITIALIZATION
+   1. SESSION GATEKEEPER
    ============================================================ */
 
 /**
- * Checks if a user is already logged in. 
- * This is called after the preloader finishes in app.js
+ * Validates the current session status.
+ * Called immediately after the preloader finishes in app.js
  */
 function checkAuthSession() {
     const savedUser = localStorage.getItem('todo_user');
@@ -17,50 +18,55 @@ function checkAuthSession() {
     const appScreen = document.getElementById('app-screen');
 
     if (savedUser) {
+        // High-end Transition: Hide Auth, Show App
         authContainer.classList.add('hidden');
         appScreen.classList.remove('hidden');
         
-        // Initialize the main app logic
+        // Boot the main application logic
         if (typeof initApp === "function") {
             initApp();
         }
     } else {
+        // Reveal Login Screen with Animation
         authContainer.classList.remove('hidden');
         appScreen.classList.add('hidden');
+        document.getElementById('login-screen').classList.add('animate-slide-up');
     }
 }
 
 /* ============================================================
-   2. UI TOGGLES (Login <-> Register)
+   2. INTERFACE TOGGLES
    ============================================================ */
 
 function toggleAuth(showRegister) {
-    const loginScreen = document.getElementById('login-screen');
-    const registerScreen = document.getElementById('register-screen');
+    const login = document.getElementById('login-screen');
+    const register = document.getElementById('register-screen');
 
     if (showRegister) {
-        loginScreen.classList.add('hidden');
-        registerScreen.classList.remove('hidden');
+        login.classList.add('hidden');
+        register.classList.remove('hidden');
+        register.classList.add('animate-slide-up');
     } else {
-        loginScreen.classList.remove('hidden');
-        registerScreen.classList.add('hidden');
+        register.classList.add('hidden');
+        login.classList.remove('hidden');
+        login.classList.add('animate-slide-up');
     }
 }
 
 /* ============================================================
-   3. AUTHENTICATION LOGIC
+   3. MANUAL AUTHENTICATION LOGIC
    ============================================================ */
 
-// --- LOGIN HANDLER ---
+// --- LOGIN SUBMISSION ---
 document.getElementById('login-form').onsubmit = async (e) => {
     e.preventDefault();
     
     const loginId = document.getElementById('login-id').value;
     const loginPass = document.getElementById('login-pass').value;
-    const submitBtn = e.target.querySelector('button');
+    const btn = e.target.querySelector('button');
 
-    submitBtn.disabled = true;
-    showToast("Verifying Credentials...");
+    btn.disabled = true;
+    APILoader.show();
 
     const res = await apiRequest({ 
         action: 'loginUser', 
@@ -69,84 +75,98 @@ document.getElementById('login-form').onsubmit = async (e) => {
     });
 
     if (res.success) {
+        // Store User Data Locally
         localStorage.setItem('todo_user', JSON.stringify(res.user));
         
         // UI Transition
-        document.getElementById('auth-container').classList.add('hidden');
-        document.getElementById('app-screen').classList.remove('hidden');
+        showToast(`Welcome back, ${res.user.name}`);
         
-        showToast(`Welcome, ${res.user.name}`);
-        initApp(); // Start loading user data
+        // Trigger page re-validation
+        checkAuthSession();
     } else {
-        showToast(res.message || "Invalid Login Details", "error");
+        showToast(res.message || "Invalid Authorization Credentials");
     }
-    submitBtn.disabled = false;
+    
+    btn.disabled = false;
+    APILoader.hide();
 };
 
-// --- REGISTRATION HANDLER ---
+// --- REGISTRATION SUBMISSION ---
 document.getElementById('register-form').onsubmit = async (e) => {
     e.preventDefault();
     
-    const name = document.getElementById('reg-user').value;
-    const email = document.getElementById('reg-email').value;
-    const phone = document.getElementById('reg-phone').value;
     const pass = document.getElementById('reg-pass').value;
     const confirm = document.getElementById('reg-confirm').value;
 
     if (pass !== confirm) {
-        return showToast("Passwords do not match!", "error");
+        return showToast("Passwords synchronization failed!");
     }
 
-    showToast("Creating Your Account...");
+    const btn = e.target.querySelector('button');
+    btn.disabled = true;
+    APILoader.show();
 
     const res = await apiRequest({ 
         action: 'registerUser', 
-        name, email, phone, pass 
+        name: document.getElementById('reg-user').value,
+        email: document.getElementById('reg-email').value,
+        phone: document.getElementById('reg-phone').value,
+        pass: pass 
     });
 
     if (res.success) {
-        showToast("Registration Successful! Please Login.");
-        toggleAuth(false); // Switch to login screen
+        showToast("Account Deployed! You may now login.");
+        toggleAuth(false);
         e.target.reset();
     } else {
-        showToast(res.message || "Registration Failed", "error");
+        showToast(res.message || "Registration sequence failed.");
     }
+    
+    btn.disabled = false;
+    APILoader.hide();
 };
 
 /* ============================================================
-   4. GOOGLE ONE-TAP AUTHENTICATION
+   4. GOOGLE IDENTITY SERVICES INTEGRATION
    ============================================================ */
 
 /**
- * Handles the response from the Google Identity Services
+ * Native Google Credential Handler
  */
 async function handleCredentialResponse(response) {
     try {
-        // Decode the Google JWT Token
-        const payload = JSON.parse(atob(response.credential.split('.')[1]));
+        // Decode Google JWT
+        const base64Url = response.credential.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(decodeURIComponent(atob(base64).split('').map(c => {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join('')));
         
-        const googleUser = {
+        const googleData = {
             id: payload.sub,
             name: payload.name,
             email: payload.email,
             picture: payload.picture
         };
 
-        showToast("Syncing Google Account...");
+        APILoader.show();
+        showToast("Syncing Google Cloud Account...");
 
-        const res = await apiRequest({ action: 'syncUser', user: googleUser });
+        const res = await apiRequest({ action: 'syncUser', user: googleData });
 
         if (res.success) {
             localStorage.setItem('todo_user', JSON.stringify(res.user));
-            showToast(`Connected as ${res.user.name}`);
+            showToast(`Verified: ${res.user.name}`);
             
-            // Reload to apply all session settings
+            // Full refresh to ensure Google session headers are active
             location.reload();
         }
-    } catch (error) {
-        console.error("Google Auth Error:", error);
-        showToast("Google Authentication Failed", "error");
+    } catch (err) {
+        console.error("G-Auth Error:", err);
+        showToast("Google Authentication Timeout.");
+    } finally {
+        APILoader.hide();
     }
 }
 
-console.log("Auth Module Loaded | Powered by Sagar Dulal");
+console.log("%c Auth Module Secured ", "background: #10b981; color: #fff; border-radius: 4px;");
