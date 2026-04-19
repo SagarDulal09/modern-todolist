@@ -1,21 +1,35 @@
 /* ============================================================
-   1. CORE SETUP & FONTS
+   1. ARCHITECTURAL VARIABLES (NEON SYSTEMS)
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-
 :root {
-    --primary: #6366f1;
-    --primary-glow: rgba(99, 102, 241, 0.4);
-    --bg-light: #f8fafc;
-    --bg-dark: #020617;
-    --card-light: #ffffff;
-    --card-dark: #0f172a;
-    --text-main-light: #1e293b;
-    --text-main-dark: #f8fafc;
-    --border-light: #f1f5f9;
-    --border-dark: #1e293b;
+    /* White Neon Theme (Light) */
+    --bg-main: #f8fafc;
+    --bg-sidebar: rgba(255, 255, 255, 0.8);
+    --card-bg: #ffffff;
+    --accent: #6366f1; /* Indigo */
+    --accent-glow: rgba(99, 102, 241, 0.2);
+    --text-head: #0f172a; /* Deep Slate */
+    --text-body: #475569; /* Muted Slate */
+    --border: #e2e8f0;
+    --input-bg: #ffffff;
 }
 
+body.dark-mode {
+    /* Blue Neon Theme (Dark) */
+    --bg-main: #020617; /* Midnight Black */
+    --bg-sidebar: rgba(7, 14, 36, 0.8);
+    --card-bg: #0f172a; /* Navy Slate */
+    --accent: #38bdf8; /* Sky Blue Neon */
+    --accent-glow: rgba(56, 189, 248, 0.3);
+    --text-head: #f8fafc; /* Ghost White */
+    --text-body: #94a3b8; /* Cool Grey */
+    --border: #1e293b;
+    --input-bg: #1e293b;
+}
+
+/* ============================================================
+   2. GLOBAL RESET & BASE
+   ============================================================ */
 * {
     margin: 0;
     padding: 0;
@@ -24,163 +38,179 @@
 }
 
 body {
-    background-color: var(--bg-light);
-    color: var(--text-main-light);
-    transition: background-color 0.4s ease;
-    overflow-x: hidden;
+    background-color: var(--bg-main);
+    color: var(--text-body);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden; /* Main scroll handled by workspace */
+}
+
+/* ============================================================
+   3. HIGH-END UI COMPONENTS (GLASSMORPHISM)
+   ============================================================ */
+.glass-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    box-shadow: 0 10px 40px -10px var(--accent-glow);
+    transition: all 0.3s ease;
+}
+
+.modern-input {
     width: 100%;
+    padding: 1rem 1.25rem;
+    background: var(--input-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 18px;
+    color: var(--text-head);
+    outline: none;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.modern-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.input-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.5rem;
+    margin-left: 0.25rem;
+    color: var(--text-body);
 }
 
 /* ============================================================
-   2. NEON DARK MODE (FIXED VISIBILITY)
-   ============================================================ */
-body.dark-mode {
-    background-color: var(--bg-dark);
-    color: var(--text-main-dark);
-}
-
-body.dark-mode .bg-white {
-    background-color: var(--card-dark) !important;
-    border-color: var(--border-dark) !important;
-}
-
-body.dark-mode .text-slate-800, 
-body.dark-mode .text-slate-700,
-body.dark-mode h2, 
-body.dark-mode h3, 
-body.dark-mode p.font-bold {
-    color: #ffffff !important;
-}
-
-body.dark-mode .text-slate-500,
-body.dark-mode .text-slate-400 {
-    color: #94a3b8 !important;
-}
-
-body.dark-mode input, 
-body.dark-mode select, 
-body.dark-mode textarea {
-    background-color: #1e293b !important;
-    border: 1px solid #334155 !important;
-    color: #ffffff !important;
-}
-
-/* ============================================================
-   3. PRELOADER & LOADING ANIMATION
-   ============================================================ */
-#preloader {
-    position: fixed;
-    inset: 0;
-    background: #ffffff;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-body.dark-mode #preloader { background: var(--bg-dark); }
-
-.loader-bar {
-    width: 240px; height: 6px;
-    background: #f1f5f9; border-radius: 20px;
-    overflow: hidden; position: relative;
-}
-
-body.dark-mode .loader-bar { background: #1e293b; }
-
-.loader-progress {
-    height: 100%; width: 0%;
-    background: var(--primary);
-    box-shadow: 0 0 15px var(--primary-glow);
-    transition: width 0.1s linear;
-}
-
-/* ============================================================
-   4. STATUS PILLS & SOCIAL ICONS
+   4. STATUS NEON BADGES
    ============================================================ */
 .status-pill {
-    padding: 4px 12px; border-radius: 8px;
-    font-size: 10px; font-weight: 800;
-    text-transform: uppercase; letter-spacing: 0.05em;
+    display: inline-flex;
+    padding: 6px 16px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid transparent;
 }
 
-.status-not-started { background: #f1f5f9; color: #64748b; }
-.status-in-progress { background: #e0e7ff; color: #4338ca; }
-.status-completed { background: #dcfce7; color: #15803d; }
-.status-delayed { background: #fee2e2; color: #b91c1c; }
+.status-not-started { background: rgba(148, 163, 184, 0.1); color: #64748b; }
+.status-in-progress { background: rgba(56, 189, 248, 0.1); color: var(--accent); border-color: var(--accent); }
+.status-completed { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+.status-delayed { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
-body.dark-mode .status-not-started { background: #334155; color: #cbd5e1; }
-body.dark-mode .status-in-progress { background: #312e81; color: #c7d2fe; }
-
+/* ============================================================
+   5. SOCIAL & BRANDING (SAGAR DULAL EDITION)
+   ============================================================ */
 .social-icon {
-    font-size: 18px; color: #94a3b8;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--text-body);
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .social-icon:hover {
-    color: var(--primary); transform: translateY(-4px) scale(1.2);
+    color: #fff;
+    background: var(--accent);
+    transform: translateY(-5px) rotate(8deg);
+    box-shadow: 0 10px 20px var(--accent-glow);
+    border-color: transparent;
 }
 
+/* =webkit Custom Scrollbar */
+.custom-scroll::-webkit-scrollbar { width: 5px; }
+.custom-scroll::-webkit-scrollbar-track { background: transparent; }
+.custom-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+.custom-scroll::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
 /* ============================================================
-   5. RESPONSIVE LAYOUT (MOBILE FIRST)
+   6. RESPONSIVE DESIGN BREAKPOINTS
    ============================================================ */
 
-/* Desktop & Large Screens */
-#app-screen { display: flex; height: 100vh; }
+/* Tablet (Medium) */
+@media (max-width: 1024px) {
+    aside {
+        width: 100px !important;
+        padding: 2rem 1rem !important;
+    }
+    aside span, aside p { display: none; }
+    main { padding: 0; }
+}
 
-/* Mobile (Small Screens) */
+/* Mobile (Small) */
 @media (max-width: 768px) {
     #app-screen { flex-direction: column; }
-
+    
     aside {
         width: 100% !important;
         height: auto !important;
         border-right: none !important;
-        border-bottom: 1px solid var(--border-light);
+        border-bottom: 1px solid var(--border);
         padding: 1rem !important;
     }
+
+    header { px: 1.5rem !important; }
 
     #lists-container {
         display: flex;
         overflow-x: auto;
         padding-bottom: 10px;
-        gap: 10px;
+        gap: 1rem;
     }
 
     #lists-container div {
-        min-width: 160px;
+        min-width: 200px;
         margin-bottom: 0 !important;
     }
 
-    .mt-auto { display: none; } /* Hide socials in sidebar on mobile to save space */
+    .mt-auto { display: none; } /* Socials move to main footer on mobile if needed */
     
-    main { height: 100vh; overflow-y: auto; }
-    
-    #task-form { padding: 1.5rem !important; }
-    
-    .grid-cols-1.md\:grid-cols-3 {
-        grid-template-columns: 1fr !important;
+    #task-form {
+        padding: 1.5rem !important;
+        gap: 1.5rem !important;
     }
 }
 
-/* Tablet (Medium Screens) */
-@media (min-width: 769px) and (max-width: 1024px) {
-    aside { width: 240px !important; }
-    .social-icon { font-size: 16px; }
+/* ============================================================
+   7. ANIMATIONS
+   ============================================================ */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Task Card Hover State */
+#tasks-container > div:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--accent);
+    background: var(--bg-sidebar);
 }
 
 /* ============================================================
-   6. UI UTILITIES
+   8. VISIBILITY OVERRIDES (NEON FIX)
    ============================================================ */
-.hidden { display: none !important; }
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3, 
+body.dark-mode h4,
+body.dark-mode p.font-bold {
+    color: #ffffff !important; /* Force high visibility for headers in dark mode */
+}
 
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
-
-#toast {
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255,255,255,0.1);
+body.dark-mode .modern-input::placeholder {
+    color: #475569;
 }
