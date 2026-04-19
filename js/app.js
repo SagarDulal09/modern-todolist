@@ -20,7 +20,19 @@ if (themeBtn) {
         applyTheme();
     };
 }
-
+async function toggleTaskStatus(taskId) {
+    showToast("Updating task...");
+    const res = await apiRequest({ 
+        action: 'updateTaskStatus', 
+        taskId: taskId 
+    });
+    
+    if (res.success) {
+        loadTasks(); // Refresh the list to show the checkmark/strikethrough
+    } else {
+        showToast("Update failed", "error");
+    }
+}
 /* --- MODAL LOGIC --- */
 function openListModal() {
     const modal = document.getElementById('list-modal');
