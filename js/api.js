@@ -1,23 +1,21 @@
 /**
- * TaskFlow API Handler
- * Connects the frontend to the Google Apps Script Backend
+ * TaskFlow API Handler - Developed by Sagar Dulal
+ * Handles all backend communication with Google Sheets
  */
 
-// Your Specific Deployment URL
+// Your Specific Deployment URL (Verified for Sagar Dulal)
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBnJA-bySZumgVenlMExqcVZUsUSdo3Efxywx_lHL6pFeNXQ6Uxg4bUz2fwKYw9ohJaw/exec";
 
 /**
- * Global function to handle all communication with Google Sheets
- * @param {Object} data - The payload containing the 'action' and required fields
- * @returns {Promise<Object>} - The JSON response from the server
+ * Global API Request Wrapper
+ * @param {Object} data - The payload containing the action and parameters
+ * @returns {Promise<Object>} - Standardized JSON response
  */
 async function apiRequest(data) {
     try {
-        // We use 'no-cors' mode only if necessary, but Google Apps Script 
-        // usually requires a standard POST for JSON exchange.
         const response = await fetch(SCRIPT_URL, {
             method: "POST",
-            mode: "cors", // Ensures we can read the JSON response
+            mode: "cors", 
             headers: {
                 "Content-Type": "text/plain;charset=utf-8",
             },
@@ -25,28 +23,29 @@ async function apiRequest(data) {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`Server Error: ${response.status}`);
         }
 
         const result = await response.json();
         
-        // Log for debugging (you can remove this in production)
-        console.log(`API Response [${data.action}]:`, result);
+        // Debugging Log (Can be disabled for production)
+        console.log(`[API] Action: ${data.action} | Status: Success`);
         
         return result;
 
     } catch (error) {
-        console.error("Critical API Error:", error);
+        console.error("Critical API Failure:", error);
         
-        // Return a consistent error object so the UI doesn't crash
+        // Ensure the UI knows the request failed without crashing
         return { 
             success: false, 
-            message: "Connection failed. Please check your internet or Script URL." 
+            message: "Connection Error: Check internet or Script URL." 
         };
     }
 }
 
 /**
- * Example Usage:
- * const response = await apiRequest({ action: 'getLists', userId: '123' });
+ * Developer Credit Console Log
  */
+console.log("%cTaskFlow Dashboard", "color: #6366f1; font-size: 20px; font-weight: bold;");
+console.log("%cDeveloped by Sagar Dulal | © 2026", "color: #64748b; font-size: 12px;");
