@@ -1,114 +1,143 @@
-/**
- * TASKFLOW PRO - CORE API ENGINE
- * Architected by Sagar Dulal | © 2026
- * Protocol: Secure Google Apps Script Web App (GAS)
- */
+/* Project: TaskFlow Pro
+    Developer: Sagar Dulal
+    Copyright: © 2026 Sagar Dulal
+*/
 
-const API_CONFIG = {
-    // ⚠️ CRITICAL: Replace with your deployed Web App URL from Google Apps Script
-    URL: "https://script.google.com/macros/s/AKfycbx679qgSU8Nz95hDDJJdiXW8H8ZJRNciAMKeBvgNwjgkpY91XTPuVP8wWPevTN7YWl-JA/exec", 
-    TIMEOUT_MS: 30000, // 30s timeout for stability in low-bandwidth areas
-    RETRIES: 2
-};
-
-/**
- * Primary Communication Gateway
- * @param {Object} payload - The action and data being sent to the cloud.
- */
-async function apiRequest(payload) {
-    APILoader.show();
-    
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT_MS);
-
-        const response = await fetch(API_CONFIG.URL, {
-            method: 'POST',
-            mode: 'cors', // Cross-Origin Resource Sharing enabled
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8', 
-            },
-            body: JSON.stringify(payload),
-            signal: controller.signal
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        
-        // Logical Gatekeeper
-        if (!data.success && data.message) {
-            console.warn("System Response Warning:", data.message);
-        }
-
-        return data;
-
-    } catch (error) {
-        console.error("NODE CONNECTION FAILURE:", error);
-        
-        let errorMsg = "Network Unstable. Checking Connection...";
-        if (error.name === 'AbortError') errorMsg = "Request Timed Out. Retrying...";
-        
-        showToast(errorMsg);
-        return { success: false, message: errorMsg };
-    } finally {
-        APILoader.hide();
-    }
+:root {
+    /* Core Dynamics */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --neon-blue: #00d2ff;
+    --neon-indigo: #6366f1;
 }
 
-/**
- * UI Sync Components
- */
-const APILoader = {
-    show: () => {
-        if (document.getElementById('api-global-loader')) return;
-        
-        const loader = document.createElement('div');
-        loader.id = 'api-global-loader';
-        loader.className = 'fixed inset-0 z-[11000] flex flex-col items-center justify-center bg-slate-950/60 backdrop-blur-md transition-opacity duration-300';
-        loader.innerHTML = `
-            <div class="glass-panel p-10 rounded-[2.5rem] flex flex-col items-center gap-6 border border-indigo-500/30">
-                <div class="relative">
-                    <i class="fas fa-satellite-dish text-indigo-500 text-3xl animate-pulse"></i>
-                    <div class="absolute -top-1 -right-1 w-3 h-3 bg-cyan-400 rounded-full animate-ping"></div>
-                </div>
-                <div class="flex flex-col items-center">
-                    <span class="text-[10px] font-black uppercase tracking-[0.4em] text-white">Syncing Node</span>
-                    <span class="text-[8px] font-bold text-slate-400 uppercase mt-2">Connecting to Secure Cloud</span>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(loader);
-    },
-    hide: () => {
-        const loader = document.getElementById('api-global-loader');
-        if (loader) {
-            loader.style.opacity = '0';
-            setTimeout(() => loader.remove(), 300);
-        }
-    }
-};
+/* --- THEME DEFINITIONS --- */
 
-/**
- * Data Sanitizer for Task Submissions
- * Ensures all session times and dates are formatted for the Spreadsheet.
- */
-const DataSanitizer = {
-    formatTask: (taskData) => {
-        return {
-            ...taskData,
-            timestamp: new Date().toISOString(),
-            deviceInfo: navigator.userAgent.substring(0, 100),
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-        };
-    }
-};
+/* DARK MODE: Blue Neon Professional */
+.dark {
+    --bg-main: #020617;
+    --bg-sidebar: #0b1120;
+    --bg-glass: rgba(15, 23, 42, 0.8);
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --border-color: rgba(0, 210, 255, 0.2);
+    --input-bg: #1e293b;
+    --shadow-neon: 0 0 20px rgba(0, 210, 255, 0.1);
+}
 
-// Auto-check for API URL configuration
-if (API_CONFIG.URL === "YOUR_GOOGLE_SCRIPT_WEB_APP_URL") {
-    console.error("TASKFLOW PRO: API URL NOT CONFIGURED. Backend sync will fail.");
+/* LIGHT MODE: White Neon Professional */
+.light {
+    --bg-main: #f8fafc;
+    --bg-sidebar: #ffffff;
+    --bg-glass: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --input-bg: #f1f5f9;
+    --shadow-neon: 0 10px 25px -5px rgba(0,0,0,0.05);
+}
+
+/* --- GLOBAL STYLES --- */
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    transition: var(--transition-smooth);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+.text-main { color: var(--text-primary); }
+.text-dim { color: var(--text-secondary); }
+
+/* --- UI COMPONENTS --- */
+
+.glass-panel {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-neon);
+    backdrop-filter: blur(12px);
+}
+
+.sidebar-bg {
+    background: var(--bg-sidebar);
+}
+
+.input-field {
+    background: var(--input-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    transition: var(--transition-smooth);
+}
+
+.input-field:focus {
+    border-color: var(--neon-indigo);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+/* --- NEON EFFECTS --- */
+
+.border-neon {
+    border: 1px solid var(--border-color);
+}
+
+.dark .border-neon:hover {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+}
+
+.shadow-neon {
+    box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+}
+
+/* --- SOCIAL ICONS --- */
+
+.social-icon {
+    width: 100%;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    transition: var(--transition-smooth);
+}
+
+.social-icon:hover {
+    color: var(--neon-indigo);
+    transform: translateY(-3px);
+    border-color: var(--neon-indigo);
+}
+
+/* --- LOADER STYLES --- */
+
+.neon-pulse {
+    text-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
+}
+
+/* --- CUSTOM SCROLLBAR --- */
+
+.custom-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: var(--neon-indigo);
+    border-radius: 10px;
+}
+
+/* --- TASK CARD ANIMATION --- */
+
+.task-card {
+    transition: var(--transition-smooth);
+    border-left: 4px solid transparent;
+}
+
+.task-card:hover {
+    transform: scale(1.01);
+    border-left-color: var(--neon-indigo);
 }
