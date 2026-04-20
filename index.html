@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TaskFlow Pro | Developer Sagar Dulal</title>
+    <title>TaskFlow Pro | Sagar Dulal Master System</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,187 +11,258 @@
     
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-['Plus_Jakarta_Sans'] overflow-hidden transition-colors duration-500">
 
     <div id="master-loader" class="fixed inset-0 z-[10000] bg-slate-950 flex flex-col items-center justify-center p-10">
-        <div class="relative w-40 h-40 mb-10">
+        <div class="relative w-48 h-48 mb-10">
             <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(99,102,241,0.1)" stroke-width="2" />
-                <circle id="loader-circle" cx="50" cy="50" r="45" fill="none" stroke="#6366f1" stroke-width="3" 
+                <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(99,102,241,0.05)" stroke-width="2" />
+                <circle id="loader-circle" cx="50" cy="50" r="45" fill="none" stroke="#6366f1" stroke-width="4" 
                         stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round" 
                         style="transition: stroke-dashoffset 0.1s linear;" />
             </svg>
             <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span id="loader-perc" class="font-black text-white text-3xl">0%</span>
-                <span class="text-[8px] text-indigo-400 font-bold tracking-widest uppercase">Syncing</span>
+                <span id="loader-perc" class="font-black text-white text-4xl">0%</span>
+                <span class="text-[9px] text-indigo-400 font-bold tracking-[0.5em] uppercase mt-2">Initializing</span>
             </div>
         </div>
-        <h2 class="text-[10px] font-black tracking-[0.7em] text-indigo-500 uppercase mb-4 animate-pulse">Establishing Neural Connection</h2>
-        <p id="loader-status" class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Handshaking with Sagar Dulal Systems...</p>
-    </div>
-
-    <div id="alert-box" class="fixed inset-0 z-[11000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md">
-        <div class="glass-panel w-full max-w-sm p-10 rounded-[3rem] text-center border-neon">
-            <div id="alert-icon-area" class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                <i id="alert-icon" class="fas fa-info text-2xl text-white"></i>
+        <div class="text-center space-y-4">
+            <h2 class="text-xs font-black tracking-[0.8em] text-indigo-500 uppercase animate-pulse">Sagar Dulal Core Engine</h2>
+            <div class="w-64 h-1 bg-slate-900 rounded-full overflow-hidden">
+                <div id="loader-bar" class="h-full bg-indigo-600 transition-all duration-100" style="width: 0%"></div>
             </div>
-            <h3 id="alert-title" class="text-xl font-black mb-2 uppercase tracking-tighter text-main">System Message</h3>
-            <p id="alert-body" class="text-dim text-sm mb-8 leading-relaxed"></p>
-            <button onclick="closeAlert()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black text-xs tracking-widest hover:scale-[1.05] active:scale-95 transition-all">ACKNOWLEDGE</button>
+            <p id="loader-status" class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Handshaking with Google Sheets Database...</p>
         </div>
     </div>
 
-    <div id="archive-modal" class="fixed inset-0 z-[10500] hidden flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
-        <div class="glass-panel w-full max-w-md p-10 rounded-[3rem] border-neon">
-            <h3 class="text-xl font-black mb-6 text-main">Relocate to Trash_Archive</h3>
-            <p class="text-dim text-[10px] mb-4 uppercase font-bold tracking-widest">Reason for archival:</p>
-            <select id="archive-reason-select" class="input-field w-full p-4 rounded-2xl mb-4 outline-none font-bold text-sm">
-                <option value="Completed Successfully">Completed Successfully</option>
-                <option value="Objective Cancelled">Objective Cancelled</option>
-                <option value="Reprioritized">Node Re-prioritization</option>
-                <option value="Duplicate">Duplicate Entry</option>
-                <option value="Deadline Expired">Deadline Expired</option>
-                <option value="Other">Specify Other Reason</option>
-            </select>
-            <textarea id="archive-other-text" class="hidden input-field w-full p-4 rounded-2xl mb-6 h-24 outline-none text-sm" placeholder="Please provide specific archival details..."></textarea>
-            <div class="flex gap-4">
-                <button onclick="closeArchiveModal()" class="flex-1 py-4 font-black text-dim text-xs uppercase tracking-widest">Cancel</button>
-                <button id="confirm-archive-btn" class="flex-1 py-4 bg-rose-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-rose-600/20">Archive Task</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="app-root" class="opacity-0 h-screen flex flex-col md:flex-row transition-opacity duration-1000">
+    <div id="auth-overlay" class="fixed inset-0 z-[9000] bg-slate-950/98 backdrop-blur-3xl flex items-center justify-center p-6 transition-all duration-700">
         
-        <aside id="sidebar" class="fixed md:relative w-80 h-full sidebar-bg z-50 -translate-x-full md:translate-x-0 transition-transform duration-500 border-r border-slate-200 dark:border-slate-800">
-            <div class="flex flex-col h-full p-8">
-                <div class="flex items-center gap-4 mb-12">
-                    <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-neon">
-                        <i class="fas fa-layer-group"></i>
+        <div id="login-card" class="glass-panel w-full max-w-lg p-12 rounded-[3.5rem] border-neon shadow-2xl transition-all duration-500">
+            <div class="text-center mb-10">
+                <div class="w-20 h-20 bg-indigo-600 rounded-[2rem] flex items-center justify-center text-white mx-auto mb-6 shadow-neon-blue">
+                    <i class="fas fa-fingerprint text-3xl"></i>
+                </div>
+                <h2 class="text-3xl font-black text-white uppercase tracking-tighter">Security Gate</h2>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.3em] mt-3">Accessing: TaskFlow Pro Cluster</p>
+            </div>
+            
+            <div class="space-y-5">
+                <div class="relative">
+                    <i class="fas fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-indigo-500"></i>
+                    <input type="email" id="login-email" class="input-field w-full p-5 pl-14 rounded-2xl outline-none text-white font-bold bg-slate-900/50 border border-slate-800 focus:border-indigo-500 transition-all" placeholder="Developer Email">
+                </div>
+                <div class="relative">
+                    <i class="fas fa-key absolute left-5 top-1/2 -translate-y-1/2 text-indigo-500"></i>
+                    <input type="password" id="login-pass" class="input-field w-full p-5 pl-14 rounded-2xl outline-none text-white font-bold bg-slate-900/50 border border-slate-800 focus:border-indigo-500 transition-all" placeholder="Access Password">
+                </div>
+                
+                <div class="flex items-center justify-between px-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="terms-agree" class="w-4 h-4 rounded accent-indigo-600">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Accept <a href="terms.html" class="text-indigo-500 hover:underline">Terms of Protocol</a></span>
+                    </label>
+                </div>
+
+                <button onclick="handleLogin()" class="w-full py-6 bg-indigo-600 text-white rounded-[1.5rem] font-black uppercase tracking-widest shadow-neon-blue hover:scale-[1.02] active:scale-95 transition-all">
+                    VERIFY IDENTITY
+                </button>
+
+                <div class="text-center pt-4 border-t border-slate-800/50 mt-6">
+                    <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Not Registered? <button onclick="toggleAuthMode('register')" class="text-indigo-500 hover:text-white transition-colors">Join Cluster</button></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="otp-card" class="hidden glass-panel w-full max-w-md p-12 rounded-[3.5rem] border-neon text-center animate-in fade-in zoom-in">
+            <div class="w-24 h-24 bg-emerald-600/10 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 border border-emerald-500/20">
+                <i class="fas fa-shield-halved text-4xl text-emerald-500"></i>
+            </div>
+            <h2 class="text-2xl font-black text-white uppercase tracking-tight">Code Verification</h2>
+            <p class="text-slate-400 text-xs mt-3 mb-10 px-4">An encrypted 6-digit verification sequence has been dispatched to your terminal.</p>
+            
+            <input type="text" maxlength="6" id="otp-input" class="w-full text-center tracking-[0.8em] text-4xl font-black input-field p-6 rounded-3xl outline-none text-white bg-slate-900/50 border-2 border-slate-800 focus:border-emerald-500 transition-all mb-8" placeholder="000000">
+            
+            <div class="space-y-4">
+                <button onclick="verifyOTP()" class="w-full py-6 bg-emerald-600 text-white rounded-2xl font-black shadow-lg shadow-emerald-600/20 active:scale-95 transition-transform">
+                    VALIDATE ACCESS
+                </button>
+                <button onclick="resendOTP()" class="text-[9px] font-black text-slate-500 uppercase tracking-widest hover:text-indigo-500 transition-colors">Resend Sequence</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-root" class="hidden h-screen flex flex-col md:flex-row opacity-0 transition-opacity duration-1000">
+        
+        <aside id="sidebar" class="fixed md:relative w-85 h-full bg-slate-950 border-r border-slate-800/50 z-50 transition-transform duration-500 -translate-x-full md:translate-x-0">
+            <div class="flex flex-col h-full p-10">
+                <div class="flex items-center gap-5 mb-14">
+                    <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-neon-blue">
+                        <i class="fas fa-cube text-2xl"></i>
                     </div>
                     <div>
-                        <span class="block font-black tracking-tighter text-xl text-main uppercase">TaskFlow<span class="text-indigo-500">Pro</span></span>
-                        <span class="text-[8px] font-black text-indigo-500 uppercase tracking-[0.3em]">Dev: Sagar Dulal</span>
+                        <span class="block font-black text-2xl tracking-tighter text-white uppercase">TaskFlow<span class="text-indigo-500">Pro</span></span>
+                        <span class="text-[8px] font-black text-indigo-500 uppercase tracking-[0.4em]">Node Operator: Sagar Dulal</span>
                     </div>
                 </div>
 
                 <div class="flex-1 overflow-y-auto custom-scroll">
-                    <div class="flex items-center justify-between mb-6">
-                        <p class="text-[10px] font-black text-dim tracking-[0.3em] uppercase">My Collections</p>
-                        <button onclick="openAddListModal()" class="text-indigo-500 hover:rotate-90 transition-transform"><i class="fas fa-plus-circle"></i></button>
+                    <div class="flex items-center justify-between mb-8 px-2">
+                        <div>
+                            <p class="text-[10px] font-black text-slate-500 tracking-[0.3em] uppercase">Collections</p>
+                            <div class="h-1 w-6 bg-indigo-600 mt-1"></div>
+                        </div>
+                        <button onclick="openAddListModal()" class="w-8 h-8 rounded-lg bg-indigo-600/10 text-indigo-500 hover:bg-indigo-600 hover:text-white transition-all">
+                            <i class="fas fa-plus text-xs"></i>
+                        </button>
                     </div>
-                    <nav id="cluster-container" class="space-y-2">
+                    
+                    <nav id="cluster-container" class="space-y-3 px-1">
                         </nav>
                 </div>
 
-                <div class="mt-auto pt-8 border-t border-slate-200 dark:border-slate-800/50">
-                    <div class="grid grid-cols-3 gap-2 mb-8">
-                        <a href="https://www.facebook.com/sagardulal09" target="_blank" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://www.instagram.com/itsme_sagar9/" target="_blank" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.linkedin.com/in/sagardulal09/" target="_blank" class="social-icon" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="https://x.com/SagarDulal09" target="_blank" class="social-icon" title="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
-                        <a href="https://www.tiktok.com/@sagardulal09" target="_blank" class="social-icon" title="TikTok"><i class="fab fa-tiktok"></i></a>
-                        <a href="https://www.threads.com/@itsme_sagar9" target="_blank" class="social-icon" title="Threads"><i class="fab fa-threads"></i></a>
+                <div class="mt-auto pt-10 border-t border-slate-800/50">
+                    <div class="grid grid-cols-3 gap-3 mb-8">
+                        <a href="https://www.facebook.com/sagardulal09" target="_blank" class="social-icon group"><i class="fab fa-facebook-f group-hover:text-indigo-500"></i></a>
+                        <a href="https://www.instagram.com/itsme_sagar9/" target="_blank" class="social-icon group"><i class="fab fa-instagram group-hover:text-pink-500"></i></a>
+                        <a href="https://www.linkedin.com/in/sagardulal09/" target="_blank" class="social-icon group"><i class="fab fa-linkedin-in group-hover:text-blue-500"></i></a>
                     </div>
-                    
-                    <button id="theme-toggle-btn" class="w-full h-12 bg-indigo-600 text-white flex items-center justify-center rounded-2xl shadow-lg mb-6 hover:scale-[1.02] active:scale-95 transition-all">
-                        <i class="fas fa-adjust mr-2"></i> <span class="text-[10px] font-black uppercase tracking-widest">Switch Visual Node</span>
+                    <button id="theme-toggle-btn" class="w-full h-14 bg-slate-900 border border-slate-800 text-white flex items-center justify-center rounded-2xl font-black text-[10px] uppercase tracking-widest mb-6 hover:bg-indigo-600 hover:border-indigo-600 transition-all group">
+                        <i class="fas fa-circle-half-stroke mr-3 group-hover:rotate-180 transition-transform duration-500"></i> Toggle Core Appearance
                     </button>
-                    
-                    <p class="text-[8px] text-center text-dim font-bold uppercase tracking-[0.2em]">© 2026 Sagar Dulal. <br>All Rights Reserved.</p>
+                    <p class="text-[8px] text-center text-slate-600 font-bold uppercase tracking-widest">Database Version: 1.0.4 | © 2026 Sagar Dulal</p>
                 </div>
             </div>
         </aside>
 
-        <main class="flex-1 h-screen overflow-y-auto p-4 md:p-12 relative custom-scroll">
+        <main class="flex-1 h-screen overflow-y-auto p-6 md:p-14 relative custom-scroll bg-slate-50 dark:bg-slate-950">
             
-            <header class="flex items-center justify-between mb-12">
-                <button onclick="toggleMobileSidebar()" class="md:hidden w-12 h-12 glass-panel rounded-2xl flex items-center justify-center text-main"><i class="fas fa-bars"></i></button>
-                
-                <div class="hidden sm:block">
-                    <h1 class="text-4xl font-black tracking-tight text-main uppercase tracking-tighter" id="current-list-title">Global Dashboard</h1>
-                    <p class="text-dim text-[10px] mt-1 uppercase font-bold tracking-[0.3em]">Operational Level: <span class="text-indigo-500">Developer</span></p>
+            <header class="flex items-center justify-between mb-16">
+                <div class="flex items-center gap-6">
+                    <button onclick="toggleMobileSidebar()" class="md:hidden w-14 h-14 glass-panel rounded-2xl flex items-center justify-center text-indigo-500 border border-slate-800"><i class="fas fa-bars"></i></button>
+                    <div>
+                        <h1 id="view-title" class="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white uppercase italic">Mission Control</h1>
+                        <div class="flex items-center gap-3 mt-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <p class="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-widest">G-Sheet Sync: <span class="text-indigo-500">Authorized</span></p>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="flex items-center gap-4">
-                    <button onclick="authLogout()" class="text-[9px] font-black text-rose-500 uppercase border border-rose-500/20 px-4 py-2 rounded-xl hover:bg-rose-500/10 transition-colors">Terminate Session</button>
-                    <div class="w-14 h-14 rounded-3xl bg-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-neon">SD</div>
+                <div class="flex items-center gap-6">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Sagar Dulal</p>
+                        <p class="text-[8px] font-bold text-slate-500 uppercase">Administrator</p>
+                    </div>
+                    <button onclick="authLogout()" class="w-14 h-14 rounded-2xl border border-rose-500/20 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all shadow-lg hover:shadow-rose-500/20">
+                        <i class="fas fa-power-off"></i>
+                    </button>
                 </div>
             </header>
 
             <div class="max-w-6xl mx-auto">
-                
-                <section class="glass-panel p-8 md:p-10 rounded-[3.5rem] mb-12 border-neon">
-                    <form id="task-deployment-form" class="space-y-8">
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            
-                            <div class="lg:col-span-2 space-y-6">
-                                <div>
-                                    <label class="text-[10px] font-black text-dim tracking-widest uppercase ml-2 mb-2 block">Objective Specification</label>
-                                    <input type="text" id="task-text-input" required class="input-field w-full p-5 rounded-2xl text-lg font-bold outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Define the task parameter...">
+                <section class="glass-panel p-10 md:p-12 rounded-[4rem] mb-16 border-neon relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-8 opacity-5">
+                        <i class="fas fa-terminal text-9xl"></i>
+                    </div>
+                    
+                    <h2 class="text-sm font-black text-indigo-500 uppercase tracking-[0.4em] mb-10 flex items-center gap-3">
+                        <i class="fas fa-plus-circle"></i> Deploy New Objective
+                    </h2>
+
+                    <form id="task-deployment-form" class="space-y-10">
+                        <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+                            <div class="lg:col-span-3 space-y-8">
+                                <div class="relative">
+                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 block ml-2">Objective Context (Task Text)</label>
+                                    <input type="text" id="task-text-input" required class="input-field w-full p-6 rounded-3xl text-xl font-bold outline-none border-2 border-slate-200 dark:border-slate-800 bg-transparent focus:border-indigo-600 transition-all dark:text-white" placeholder="Describe the mission parameters...">
                                 </div>
-                                
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="text-[10px] font-black text-dim tracking-widest uppercase ml-2 mb-2 block">Primary Launch</label>
-                                        <input type="datetime-local" id="t-start-1" required class="input-field w-full p-4 rounded-2xl text-xs outline-none">
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div class="p-6 rounded-3xl bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+                                        <p class="text-[9px] font-black text-indigo-500 uppercase tracking-widest mb-5">Primary Time Window</p>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <input type="datetime-local" id="t-start-1" required class="bg-transparent text-xs font-bold dark:text-white outline-none border-b border-slate-700 pb-2">
+                                            <input type="datetime-local" id="t-end-1" required class="bg-transparent text-xs font-bold dark:text-white outline-none border-b border-slate-700 pb-2">
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label class="text-[10px] font-black text-dim tracking-widest uppercase ml-2 mb-2 block">Primary Deadline</label>
-                                        <input type="datetime-local" id="t-end-1" required class="input-field w-full p-4 rounded-2xl text-xs outline-none">
-                                    </div>
-                                </div>
-                                
-                                <div id="secondary-window" class="hidden grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top">
-                                    <div>
-                                        <label class="text-[10px] font-black text-indigo-400 tracking-widest uppercase ml-2 mb-2 block">Secondary Launch</label>
-                                        <input type="datetime-local" id="t-start-2" class="input-field w-full p-4 rounded-2xl text-xs outline-none border-indigo-500/20">
-                                    </div>
-                                    <div>
-                                        <label class="text-[10px] font-black text-indigo-400 tracking-widest uppercase ml-2 mb-2 block">Secondary Deadline</label>
-                                        <input type="datetime-local" id="t-end-2" class="input-field w-full p-4 rounded-2xl text-xs outline-none border-indigo-500/20">
+                                    <div id="secondary-window" class="p-6 rounded-3xl bg-slate-100 dark:bg-slate-900/50 border border-indigo-500/20 opacity-40 hover:opacity-100 transition-opacity">
+                                        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-5">Secondary Time Window (Optional)</p>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <input type="datetime-local" id="t-start-2" class="bg-transparent text-xs font-bold dark:text-white outline-none border-b border-slate-700 pb-2">
+                                            <input type="datetime-local" id="t-end-2" class="bg-transparent text-xs font-bold dark:text-white outline-none border-b border-slate-700 pb-2">
+                                        </div>
                                     </div>
                                 </div>
-                                <button type="button" id="toggle-secondary-btn" class="text-[9px] font-black text-indigo-500 uppercase tracking-widest ml-2 hover:text-indigo-400 transition-colors">
-                                    <i class="fas fa-clock mr-1"></i> Add Secondary Window (Optional)
-                                </button>
                             </div>
 
-                            <div class="space-y-6">
+                            <div class="space-y-8 flex flex-col justify-end">
                                 <div>
-                                    <label class="text-[10px] font-black text-dim tracking-widest uppercase ml-2 mb-2 block">Initial Status</label>
-                                    <select id="t-status-select" class="input-field w-full p-5 rounded-2xl font-bold outline-none text-sm cursor-pointer">
-                                        <option value="Not Started">Not Started</option>
-                                        <option value="In Progress">In Progress</option>
-                                        <option value="Completed">Completed</option>
-                                        <option value="Delayed">Delayed</option>
+                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 block ml-2">Objective Status</label>
+                                    <select id="t-status-select" class="w-full p-6 rounded-3xl font-bold bg-slate-100 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 outline-none text-indigo-500 appearance-none cursor-pointer">
+                                        <option value="Not Started">NOT STARTED</option>
+                                        <option value="In Progress">IN PROGRESS</option>
+                                        <option value="Completed">COMPLETED</option>
+                                        <option value="Delayed">DELAYED</option>
                                     </select>
                                 </div>
-                                <button type="submit" class="w-full py-6 bg-indigo-600 text-white rounded-3xl font-black text-sm tracking-[0.2em] uppercase shadow-neon-blue hover:translate-y-[-2px] active:translate-y-0 transition-all">
-                                    Deploy to Cloud
+                                <button type="submit" class="w-full py-8 bg-indigo-600 text-white rounded-[2rem] font-black text-sm uppercase tracking-widest shadow-neon-blue hover:translate-y-[-4px] active:translate-y-[0] transition-all">
+                                    DEPLOY OBJECTIVE
                                 </button>
                             </div>
                         </div>
                     </form>
                 </section>
 
-                <div class="flex flex-col sm:flex-row items-center justify-between mb-8 px-4 gap-4">
-                    <h2 class="text-2xl font-black text-main uppercase tracking-tighter">Objective Cluster</h2>
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <select id="status-filter" class="glass-panel w-full sm:w-auto p-3 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none border-neon cursor-pointer">
-                            <option value="All">All Objectives</option>
-                            <option value="Not Started">Not Started</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Delayed">Delayed</option>
-                        </select>
+                <div class="flex flex-col sm:flex-row items-center justify-between mb-12 px-6 gap-6">
+                    <div>
+                        <h2 class="text-3xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter">Objective Feed</h2>
+                        <p class="text-[9px] font-black text-indigo-500 uppercase tracking-widest mt-1">Real-time Node Synchronization</p>
+                    </div>
+                    <div class="flex items-center gap-4 bg-slate-900/5 p-2 rounded-2xl dark:bg-slate-900/50 border border-slate-800">
+                        <button class="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-white bg-indigo-600">All</button>
+                        <button class="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Pending</button>
+                        <button class="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Archived</button>
                     </div>
                 </div>
 
-                <div id="task-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-24">
+                <div id="task-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-32">
                     </div>
             </div>
         </main>
+    </div>
+
+    <div id="archive-modal" class="fixed inset-0 z-[11000] hidden flex items-center justify-center p-6 bg-slate-950/95 backdrop-blur-md">
+        <div class="glass-panel w-full max-w-md p-12 rounded-[4rem] border-neon text-center relative overflow-hidden">
+            <div class="w-24 h-24 bg-rose-600/10 rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 border border-rose-500/20">
+                <i class="fas fa-trash-can text-3xl text-rose-500"></i>
+            </div>
+            <h3 class="text-2xl font-black text-white uppercase tracking-tighter mb-4">Relocation Reasoning</h3>
+            <p class="text-slate-400 text-xs mb-10 px-4">Specify the reason for decommissioning this node from the active cluster.</p>
+            
+            <select id="archive-reason-select" class="w-full p-6 rounded-3xl font-bold bg-slate-900 border border-slate-800 outline-none text-white mb-10 appearance-none cursor-pointer">
+                <option value="Completed Successfully">Task Successfully Completed</option>
+                <option value="Project Cancelled">Objective Cancellation</option>
+                <option value="Duplicate Node">Duplicate Entry Detection</option>
+                <option value="Resource Limitation">Resource Conflict</option>
+                <option value="Other">External Factors (Other)</option>
+            </select>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="document.getElementById('archive-modal').classList.add('hidden')" class="py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest text-slate-500 border border-slate-800 hover:bg-slate-900 transition-all">Abort</button>
+                <button id="confirm-archive-btn" class="py-5 bg-rose-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-rose-600/20 active:scale-95 transition-all">Relocate Node</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="system-alert" class="fixed bottom-10 right-10 z-[20000] hidden transform translate-y-20 opacity-0 transition-all duration-500">
+        <div class="glass-panel p-6 rounded-3xl border-neon-blue flex items-center gap-6 min-w-[320px]">
+            <div id="alert-icon-box" class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div>
+                <h4 id="alert-title" class="font-black text-sm text-white uppercase tracking-tighter">System Alert</h4>
+                <p id="alert-body" class="text-[10px] text-slate-400 font-medium uppercase tracking-widest mt-1">Message content goes here.</p>
+            </div>
+        </div>
     </div>
 
     <script src="js/api.js"></script>
