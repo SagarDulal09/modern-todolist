@@ -1,19 +1,103 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <title>Terms & Conditions | TaskFlow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Protocol | Sagar Dulal Core</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        body {
+            background: radial-gradient(circle at top right, #0f172a, #020617);
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+        .legal-card {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+    </style>
 </head>
-<body class="bg-slate-50 p-10 text-slate-700 leading-relaxed">
-    <div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-sm">
-        <h1 class="text-3xl font-bold text-indigo-600 mb-6">Terms and Conditions</h1>
-        <p class="mb-4">Welcome to TaskFlow, owned by <strong>Sagar Dulal</strong>.</p>
-        <h2 class="text-xl font-bold mb-2">1. Data Privacy</h2>
-        <p class="mb-4">Your data is stored securely using Google Sheets. We do not access your personal passwords or share your phone number with third parties.</p>
-        <h2 class="text-xl font-bold mb-2">2. Usage</h2>
-        <p class="mb-4">This application is provided for personal productivity. Users are responsible for maintaining the confidentiality of their login credentials.</p>
-        <button onclick="window.close()" class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-lg">Close Window</button>
+<body class="p-6 md:p-20 flex justify-center items-start">
+
+    <div class="max-w-3xl w-full">
+        <header class="mb-12 text-center md:text-left flex flex-col md:flex-row items-center gap-6">
+            <div class="w-20 h-20 bg-indigo-600 rounded-[2rem] flex items-center justify-center text-white shadow-neon-blue">
+                <i class="fas fa-file-contract text-3xl"></i>
+            </div>
+            <div>
+                <h1 class="text-4xl font-black text-white uppercase tracking-tighter">Terms of <span class="text-indigo-500">Protocol</span></h1>
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mt-2">TaskFlow Pro v1.0.4 | Legal Framework</p>
+            </div>
+        </header>
+
+        <main class="legal-card p-10 md:p-16 rounded-[4rem] shadow-2xl space-y-12">
+            
+            <section class="space-y-4">
+                <div class="flex items-center gap-4">
+                    <span class="text-indigo-500 font-black text-xl">01</span>
+                    <h2 class="text-sm font-black text-white uppercase tracking-widest">Data Synchronization</h2>
+                </div>
+                <p class="text-slate-400 text-sm leading-relaxed ml-9">
+                    By utilizing the <strong class="text-indigo-400">TaskFlow Pro Cluster</strong>, you authorize the system to synchronize your input data with the <strong class="text-indigo-400">Sagar Dulal Database Nodes</strong>. This includes task descriptions, timestamps, and device metadata for session continuity and system optimization.
+                </p>
+            </section>
+
+            <section class="space-y-4">
+                <div class="flex items-center gap-4">
+                    <span class="text-indigo-500 font-black text-xl">02</span>
+                    <h2 class="text-sm font-black text-white uppercase tracking-widest">OTP & Identity Gate</h2>
+                </div>
+                <p class="text-slate-400 text-sm leading-relaxed ml-9">
+                    Access is strictly limited to verified operators. Your identity is validated through a 6-digit One-Time Password (OTP) dispatched to your registered terminal. Unauthorized attempts to bypass the <strong class="text-indigo-400">Security Gate</strong> are logged in the <code class="bg-slate-800 px-2 py-1 rounded text-rose-400">System_Logs</code> sheet.
+                </p>
+            </section>
+
+            <section class="space-y-4">
+                <div class="flex items-center gap-4">
+                    <span class="text-indigo-500 font-black text-xl">03</span>
+                    <h2 class="text-sm font-black text-white uppercase tracking-widest">Archival Protocol</h2>
+                </div>
+                <p class="text-slate-400 text-sm leading-relaxed ml-9">
+                    Decommissioned nodes (deleted tasks) are not immediately purged. They are relocated to the <strong class="text-indigo-400">Trash_Archive</strong> repository. Sagar Dulal reserves the right to maintain these logs for 30 cycles for recovery purposes before permanent deletion.
+                </p>
+            </section>
+
+            <section class="space-y-4">
+                <div class="flex items-center gap-4">
+                    <span class="text-indigo-500 font-black text-xl">04</span>
+                    <h2 class="text-sm font-black text-white uppercase tracking-widest">Prohibited Usage</h2>
+                </div>
+                <p class="text-slate-400 text-sm leading-relaxed ml-9">
+                    Users must not deploy objectives containing malicious code, scripts, or content that violates the educational integrity of <strong class="text-indigo-400">Durga IT Solution</strong>. Any breach may result in immediate terminal revocation.
+                </p>
+            </section>
+
+            <footer class="pt-10 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                    Last Revised: April 20, 2026
+                </div>
+                <button onclick="window.close()" class="px-10 py-4 bg-slate-900 border border-indigo-500/30 text-indigo-500 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-indigo-600 hover:text-white transition-all">
+                    Close Terminal
+                </button>
+            </footer>
+        </main>
+
+        <div class="mt-12 text-center">
+            <p class="text-[9px] font-black text-slate-700 uppercase tracking-[0.5em]">© 2026 Sagar Dulal | Durga IT Solution</p>
+        </div>
     </div>
+
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
 </body>
 </html>
