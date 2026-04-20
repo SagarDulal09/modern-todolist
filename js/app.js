@@ -1,238 +1,213 @@
 /**
- * TASKFLOW PRO - MASTER OPERATIONAL ENGINE
- * Architected by Sagar Dulal | © 2026
- * Functional Scope: Task Lifecycle, UI State, & Theme Management
+ * Project: TaskFlow Pro
+ * Developer: Sagar Dulal
+ * Copyright: © 2026 Sagar Dulal
  */
 
-// --- 1. GLOBAL STATE CONFIGURATION ---
-let currentUser = JSON.parse(localStorage.getItem('todo_user')) || null;
-let activeListId = null;
-let activeListTitle = "";
+document.addEventListener('DOMContentLoaded', () => {
+    initSystemLoader();
+    initTheme();
+    setupEventListeners();
+});
 
-// --- 2. INITIALIZATION PROTOCOL ---
-window.onload = () => {
-    // Check Authentication Status
-    if (currentUser) {
-        document.getElementById('auth-container').classList.add('hidden');
-        document.getElementById('app-screen').classList.remove('hidden');
-        
-        // Identity Branding
-        const avatar = document.getElementById('user-avatar');
-        if (avatar) avatar.innerText = currentUser.name.charAt(0).toUpperCase();
-        
-        initializeSystem();
-    }
-    
-    // Theme Persistence
-    if (localStorage.getItem('tf_theme') === 'dark') {
-        document.body.classList.add('dark-mode');
-    }
-    
-    // Kill Preloader
-    setTimeout(() => {
-        const preloader = document.getElementById('preloader');
-        if (preloader) preloader.style.display = 'none';
-    }, 1500);
-};
+// --- 1. SYSTEM LOADER (10-SECOND SYNC) ---
+function initSystemLoader() {
+    let progress = 0;
+    const circle = document.getElementById('loader-circle');
+    const percText = document.getElementById('loader-perc');
+    const statusText = document.getElementById('loader-status');
+    const messages = [
+        "Connecting to Sagar Dulal Cloud...",
+        "Fetching User Permissions...",
+        "Syncing Database Sheets...",
+        "Establishing Secure Node...",
+        "Interface Ready."
+    ];
 
-async function initializeSystem() {
-    await loadLists();
-    showToast(`Welcome back, Node ${currentUser.name.split(' ')[0]}`);
+    const interval = setInterval(() => {
+        progress++;
+        const offset = 283 - (283 * progress / 100);
+        circle.style.strokeDashoffset = offset;
+        percText.innerText = `${progress}%`;
+
+        // Update status text based on percentage
+        if (progress < 25) statusText.innerText = messages[0];
+        else if (progress < 50) statusText.innerText = messages[1];
+        else if (progress < 75) statusText.innerText = messages[2];
+        else if (progress < 95) statusText.innerText = messages[3];
+
+        if (progress >= 100) {
+            clearInterval(interval);
+            statusText.innerText = messages[4];
+            setTimeout(() => {
+                document.getElementById('master-loader').classList.add('hidden');
+                document.getElementById('app-root').classList.replace('opacity-0', 'opacity-100');
+                document.body.style.overflow = 'auto';
+            }, 600);
+        }
+    }, 100); // 100ms * 100 = 10,000ms (10 seconds)
 }
 
-// --- 3. PROJECT CLUSTER (LISTS) MANAGEMENT ---
-async function loadLists() {
-    const res = await apiRequest({ action: 'getLists', userId: currentUser.id });
-    const container = document.getElementById('lists-container');
-    
-    if (!res.success) return;
+// --- 2. THEME CONTROLLER ---
+function initTheme() {
+    const savedTheme = localStorage.getItem('tfp-theme') || 'dark';
+    document.documentElement.className = savedTheme;
+    updateThemeIcon(savedTheme);
 
-    container.innerHTML = '';
-    
-    // Add "New Project" Logic if needed, but for now, map existing
-    res.data.forEach(list => {
-        const btn = document.createElement('button');
-        const isActive = activeListId === list.list_id;
-        
-        btn.className = `w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${
-            isActive 
-            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' 
-            : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
-        }`;
-        
-        btn.onclick = () => selectList(list.list_id, list.list_title);
-        
-        btn.innerHTML = `
-            <div class="flex items-center gap-4">
-                <i class="fas fa-folder text-[10px] ${isActive ? 'text-indigo-200' : 'text-indigo-500'}"></i>
-                <span class="text-[10px] font-black uppercase tracking-widest">${list.list_title}</span>
-            </div>
-            <i class="fas fa-chevron-right text-[8px] opacity-0 group-hover:opacity-100 transition-opacity"></i>
-        `;
-        container.appendChild(btn);
+    document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+        const current = document.documentElement.className;
+        const target = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.className = target;
+        localStorage.setItem('tfp-theme', target);
+        updateThemeIcon(target);
+        showSystemAlert("Theme Recalibrated", `Switched to ${target === 'dark' ? 'Blue Neon' : 'White Neon'} mode.`, "success");
     });
 }
 
-function selectList(id, title) {
-    activeListId = id;
-    activeListTitle = title;
-    
-    document.getElementById('active-list-title').innerText = title;
-    document.getElementById('task-input-section').classList.remove('hidden');
-    
-    loadTasks();
-    loadLists(); // Refresh sidebar UI
+function updateThemeIcon(theme) {
+    const icon = document.querySelector('#theme-toggle-btn i');
+    icon.className = theme === 'dark' ? 'fas fa-moon mr-2' : 'fas fa-sun mr-2';
 }
 
-// --- 4. TASK LIFECYCLE OPERATIONS ---
-document.getElementById('task-form').onsubmit = async (e) => {
-    e.preventDefault();
-    
-    const taskData = {
-        action: 'addTask',
-        listId: activeListId,
-        text: document.getElementById('task-input').value,
-        status: document.getElementById('task-status').value,
-        dueDate: document.getElementById('task-date').value,
-        endDate: document.getElementById('task-end-date').value,
-        startTime: document.getElementById('task-time-start').value,
-        endTime: document.getElementById('task-time-end').value,
-        secStart: document.getElementById('task-sec-start').value,
-        secEnd: document.getElementById('task-sec-end').value
-    };
+// --- 3. TASK DEPLOYMENT LOGIC ---
+function setupEventListeners() {
+    const taskForm = document.getElementById('task-deployment-form');
+    const secondaryBtn = document.getElementById('toggle-secondary-btn');
+    const secondaryWindow = document.getElementById('secondary-window');
+    const archiveReasonSelect = document.getElementById('archive-reason-select');
 
-    const res = await apiRequest(taskData);
-    
-    if (res.success) {
-        showToast("Objective Deployed Successfully");
-        e.target.reset();
-        loadTasks();
-    }
-};
+    // Toggle Secondary Time Slots
+    secondaryBtn.addEventListener('click', () => {
+        secondaryWindow.classList.toggle('hidden');
+        secondaryBtn.innerHTML = secondaryWindow.classList.contains('hidden') 
+            ? '<i class="fas fa-clock mr-1"></i> Add Secondary Window (Optional)' 
+            : '<i class="fas fa-times mr-1"></i> Remove Secondary Window';
+    });
 
-async function loadTasks() {
-    const container = document.getElementById('tasks-container');
-    container.innerHTML = `
-        <div class="col-span-full py-20 text-center animate-pulse">
-            <i class="fas fa-spinner fa-spin text-indigo-500 mb-4"></i>
-            <p class="text-[10px] font-black uppercase text-slate-400">Syncing Node Data...</p>
-        </div>
-    `;
+    // Toggle "Other" Reason Textarea
+    archiveReasonSelect.addEventListener('change', (e) => {
+        const otherText = document.getElementById('archive-other-text');
+        otherText.classList.toggle('hidden', e.target.value !== 'Other');
+    });
 
-    const res = await apiRequest({ action: 'getTasks', listId: activeListId });
-    
-    if (!res.success || res.data.length === 0) {
-        container.innerHTML = `
-            <div class="col-span-full p-12 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[3rem]">
-                <p class="text-slate-400 font-bold uppercase text-[10px] tracking-widest">No active objectives in this cluster.</p>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = '';
-    res.data.forEach(task => {
-        const card = document.createElement('div');
-        card.className = 'task-card animate-slide-up';
+    // Handle Task Submission
+    taskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
         
-        // Status Color Logic
-        const statusColors = {
-            'Completed': 'bg-emerald-500/10 text-emerald-600',
-            'In Progress': 'bg-amber-500/10 text-amber-600',
-            'Delayed': 'bg-rose-500/10 text-rose-600',
-            'Not Started': 'bg-slate-100 text-slate-500'
+        const taskID = `TFP-${new Date().getFullYear()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        const payload = {
+            task_id: taskID,
+            task_text: document.getElementById('task-text-input').value,
+            status: document.getElementById('t-status-select').value,
+            start_1: document.getElementById('t-start-1').value,
+            end_1: document.getElementById('t-end-1').value,
+            start_2: document.getElementById('t-start-2').value || null,
+            end_2: document.getElementById('t-end-2').value || null,
+            created_at: new Date().toISOString(),
+            device_info: navigator.userAgent
         };
 
-        card.innerHTML = `
+        renderTaskCard(payload);
+        taskForm.reset();
+        if(!secondaryWindow.classList.contains('hidden')) secondaryBtn.click();
+        
+        showSystemAlert("Deployment Successful", `Task ${taskID} pushed to cluster.`, "success");
+        
+        // Call API
+        if (typeof API !== 'undefined') await API.saveTask(payload);
+    });
+}
+
+// --- 4. UI RENDERING ---
+function renderTaskCard(data) {
+    const grid = document.getElementById('task-grid');
+    const statusColors = {
+        'Not Started': 'border-slate-500 text-slate-500',
+        'In Progress': 'border-blue-500 text-blue-500',
+        'Completed': 'border-emerald-500 text-emerald-500',
+        'Delayed': 'border-amber-500 text-amber-500'
+    };
+
+    const cardHTML = `
+        <div id="node-${data.task_id}" class="glass-panel p-8 rounded-[2.5rem] relative group animate-in slide-in-from-bottom duration-500 border-neon">
             <div class="flex justify-between items-start mb-6">
-                <span class="status-pill ${statusColors[task.status] || ''}">${task.status}</span>
-                <button onclick="openTrash('${task.task_id}')" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 transition-colors">
+                <span class="text-[9px] font-black text-indigo-500 tracking-[0.2em] uppercase">${data.task_id}</span>
+                <button onclick="prepareArchive('${data.task_id}')" class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <i class="fas fa-trash-alt text-xs"></i>
                 </button>
             </div>
+            <h3 class="text-lg font-bold text-main mb-6">${data.task_text}</h3>
             
-            <h4 class="text-lg font-black dark:text-white leading-tight mb-6">${task.task_text}</h4>
-            
-            <div class="grid grid-cols-2 gap-4 pt-6 border-t border-slate-100 dark:border-slate-800">
-                <div>
-                    <p class="text-[8px] font-black text-slate-400 uppercase mb-1">Timeline</p>
-                    <p class="text-[10px] font-bold dark:text-slate-300">
-                        ${task.due_date || 'N/A'} <span class="text-slate-300">→</span> <span class="text-rose-500">${task.end_date || '??'}</span>
-                    </p>
-                </div>
-                <div>
-                    <p class="text-[8px] font-black text-slate-400 uppercase mb-1">S1 Focus</p>
-                    <p class="text-[10px] font-bold dark:text-slate-300">${task.start1 || '--:--'} to ${task.end1 || '--:--'}</p>
-                </div>
+            <div class="flex flex-wrap gap-3 mb-6">
+                <span class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${statusColors[data.status] || 'border-slate-500'}">
+                    ${data.status}
+                </span>
             </div>
-        `;
-        container.appendChild(card);
-    });
+
+            <div class="pt-6 border-t border-slate-200 dark:border-slate-800/50 flex justify-between items-center">
+                <div class="text-dim text-[9px] font-bold uppercase tracking-widest">
+                    <i class="far fa-calendar-alt mr-1"></i> ${new Date(data.start_1).toLocaleDateString()}
+                </div>
+                <button class="text-[9px] font-black text-indigo-500 uppercase tracking-widest hover:underline">Modify Node</button>
+            </div>
+        </div>
+    `;
+    grid.insertAdjacentHTML('afterbegin', cardHTML);
 }
 
-// --- 5. ARCHIVAL PROTOCOL (TRASH) ---
-function openTrash(id) {
-    document.getElementById('trash-target-id').value = id;
-    document.getElementById('trash-modal').classList.remove('hidden');
+// --- 5. ARCHIVAL ENGINE ---
+let activeArchiveID = null;
+
+function prepareArchive(id) {
+    activeArchiveID = id;
+    document.getElementById('archive-modal').classList.remove('hidden');
 }
 
-function closeTrashModal() {
-    document.getElementById('trash-modal').classList.add('hidden');
+function closeArchiveModal() {
+    document.getElementById('archive-modal').classList.add('hidden');
+    activeArchiveID = null;
 }
 
-document.getElementById('trash-form').onsubmit = async (e) => {
-    e.preventDefault();
-    const taskId = document.getElementById('trash-target-id').value;
-    const reason = document.getElementById('trash-reason').value;
+document.getElementById('confirm-archive-btn').addEventListener('click', async () => {
+    if (!activeArchiveID) return;
 
-    const res = await apiRequest({ 
-        action: 'deleteTask', 
-        taskId: taskId, 
-        reason: reason 
-    });
+    const reason = document.getElementById('archive-reason-select').value;
+    const other = document.getElementById('archive-other-text').value;
+    const finalReason = reason === 'Other' ? other : reason;
 
-    if (res.success) {
-        showToast("Node Relocated to Archive");
-        closeTrashModal();
-        loadTasks();
+    // Remove from UI
+    const el = document.getElementById(`node-${activeArchiveID}`);
+    if (el) el.remove();
+
+    showSystemAlert("Archived", `Node ${activeArchiveID} moved to Trash_Archive.`, "error");
+    closeArchiveModal();
+
+    // Call API to move to Trash_Archive Sheet
+    if (typeof API !== 'undefined') {
+        await API.archiveTask({
+            task_id: activeArchiveID,
+            archival_reason: finalReason,
+            archived_at: new Date().toISOString(),
+            archived_by: "Sagar Dulal"
+        });
     }
-};
+});
 
-// --- 6. UI & THEME UTILITIES ---
-function showToast(msg) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toast-text').innerText = msg;
-    toast.style.bottom = "40px";
-    setTimeout(() => { toast.style.bottom = "-100px"; }, 4000);
+// --- 6. UTILITIES ---
+function showSystemAlert(title, body, type) {
+    const alertBox = document.getElementById('alert-box');
+    const iconArea = document.getElementById('alert-icon-area');
+    document.getElementById('alert-title').innerText = title;
+    document.getElementById('alert-body').innerText = body;
+
+    iconArea.style.background = type === 'success' ? '#10b981' : (type === 'error' ? '#ef4444' : '#6366f1');
+    alertBox.classList.remove('hidden');
 }
 
-document.getElementById('theme-toggle').onclick = () => {
-    const isDark = document.body.classList.toggle('dark-mode');
-    localStorage.setItem('tf_theme', isDark ? 'dark' : 'light');
-    showToast(`Mode: ${isDark ? 'Dark Neon' : 'Minimal Light'}`);
-};
-
-function confirmLogout() {
-    if (confirm("Terminate secure session and disconnect?")) {
-        localStorage.removeItem('todo_user');
-        location.reload();
-    }
+function closeAlert() {
+    document.getElementById('alert-box').classList.add('hidden');
 }
 
-// --- 7. EXTERNAL MODALS (PROJECTS) ---
-function openListModal() {
-    const title = prompt("Enter Project/Cluster Name:");
-    if (title) createList(title);
-}
-
-async function createList(title) {
-    const res = await apiRequest({ 
-        action: 'addList', 
-        userId: currentUser.id, 
-        title: title 
-    });
-    if (res.success) {
-        showToast("New Cluster Established");
-        loadLists();
-    }
+function toggleMobileSidebar() {
+    document.getElementById('sidebar').classList.toggle('-translate-x-full');
 }
