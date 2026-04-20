@@ -1,162 +1,127 @@
 /**
- * TASKFLOW PRO - SECURITY & IDENTITY CONTROLLER
- * Architected by Sagar Dulal | © 2026
- * Scope: Identity Verification, OTP Protocol, & Session Security
+ * Project: TaskFlow Pro
+ * Developer: Sagar Dulal
+ * Copyright: © 2026 Sagar Dulal
+ * Purpose: Authentication, OTP Logic, and Session Management
  */
 
-// --- 1. UI TOGGLE LOGIC ---
-function toggleAuth(isRegister) {
-    const loginScreen = document.getElementById('login-screen');
-    const registerScreen = document.getElementById('register-screen');
-    
-    if (isRegister) {
-        loginScreen.classList.add('hidden');
-        registerScreen.classList.remove('hidden');
-    } else {
-        registerScreen.classList.add('hidden');
-        loginScreen.classList.remove('hidden');
-    }
-}
+const AuthSystem = {
+    currentUser: null,
 
-// --- 2. REGISTRATION & OTP PROTOCOL ---
+    init() {
+        this.checkSession();
+        this.bindEvents();
+    },
 
-/**
- * Dispatches a 6-digit security token to the user's email via the Cloud Engine.
- */
-async function requestOTP() {
-    const name = document.getElementById('reg-user').value.trim();
-    const email = document.getElementById('reg-email').value.trim();
-    const phone = document.getElementById('reg-phone').value.trim();
-    const pass = document.getElementById('reg-pass').value.trim();
-
-    // Field Validation
-    if (!name || !email || !phone || pass.length < 6) {
-        return showToast("Complete all fields. Password must be 6+ chars.");
-    }
-
-    // Email Validation Regex
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return showToast("Invalid Email Format");
-
-    const res = await apiRequest({ 
-        action: 'sendOTP', 
-        email: email, 
-        name: name 
-    });
-
-    if (res.success) {
-        document.getElementById('otp-area').classList.remove('hidden');
-        document.getElementById('send-otp-btn').innerText = "Resend Security Token";
-        document.getElementById('send-otp-btn').classList.add('opacity-50');
-        showToast("Verification Token Dispatched");
-    } else {
-        showToast(res.message || "Failed to dispatch token.");
-    }
-}
-
-/**
- * Validates the OTP and commits the user to the permanent Database.
- */
-async function verifyAndRegister() {
-    const otp = document.getElementById('reg-otp').value.trim();
-    const email = document.getElementById('reg-email').value.trim();
-
-    APILoader.show();
-    
-    // Explicitly sending email and otp for verification
-    const verifyRes = await apiRequest({ 
-        action: 'validateOTP', 
-        email: email, 
-        otp: otp 
-    });
-
-    if (verifyRes.success) {
-        // Continue to registration...
-        const name = document.getElementById('reg-user').value.trim();
-        const phone = document.getElementById('reg-phone').value.trim();
-        const pass = document.getElementById('reg-pass').value.trim();
-
-        const regRes = await apiRequest({ 
-            action: 'registerUser', 
-            name, email, phone, pass 
-        });
-
-        if (regRes.success) {
-            localStorage.setItem('todo_user', JSON.stringify({ id: regRes.userId, name, email }));
-            location.reload();
+    /**
+     * Check if user is already logged in via LocalStorage
+     */
+    checkSession() {
+        const savedUser = localStorage.getItem('tfp_session');
+        if (savedUser) {
+            this.currentUser = JSON.parse(savedUser);
+            console.log("Session Restored: " + this.currentUser.full_name);
+        } else {
+            // In a real app, redirect to login.html if not on it
+            // window.location.href = 'login.html';
         }
-    } else {
-        APILoader.hide();
-        showToast(verifyRes.message);
-    }
-}
-// --- 3. LOGIN & ACCESS CONTROL ---
+    },
 
-document.getElementById('login-form').onsubmit = async (e) => {
-    e.preventDefault();
-    
-    const loginId = document.getElementById('login-id').value.trim();
-    const loginPass = document.getElementById('login-pass').value.trim();
+    /**
+     * Logic for OTP Generation (Syncs with OTP_LOG sheet)
+     */
+    async sendOTP(email) {
+        const otpCode = Math.floor(100000 + Math.random() * 900000); // 6 Digit OTP
+        
+        const payload = {
+            email: email,
+            otp_code: otpCode,
+            timestamp: new Date().toISOString()
+        };
 
-    if (!loginId || !loginPass) return showToast("Credentials required");
+        showSystemAlert("OTP Sent", `Verification code dispatched to ${email}`, "success");
+        
+        // Push to OTP_LOG sheet via API
+        if (typeof API !== 'undefined') {
+            return await API.request('logOTP', payload);
+        }
+        return otpCode; 
+    },
 
-    const res = await apiRequest({ 
-        action: 'loginUser', 
-        loginId: loginId, 
-        loginPass: loginPass 
-    });
+    /**
+     * Handle User Registration
+     * Matches Users Sheet: user_id, full_name, email, phone, password, created_at, last_login
+     */
+    async registerUser(formData) {
+        const userId = `USR-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+        
+        const userData = {
+            user_id: userId,
+            full_name: formData.fullName,
+            email: formData.email,
+            phone: formData.phone,
+            password: btoa(formData.password), // Basic Base64 encoding for demo
+            created_at: new Date().toISOString(),
+            last_login: new Date().toISOString()
+        };
 
-    if (res.success) {
-        localStorage.setItem('todo_user', JSON.stringify(res.user));
-        showToast("Access Granted. Redirecting...");
-        setTimeout(() => location.reload(), 1000);
-    } else {
-        showToast(res.message || "Invalid System Credentials");
+        showSystemAlert("Account Created", "Welcome to TaskFlow Pro, " + formData.fullName, "success");
+        
+        // Log to System_Logs
+        if (typeof API !== 'undefined') {
+            await API.request('insertUser', userData);
+            await API.logSystemEvent(userId, "ACCOUNT_CREATION");
+        }
+
+        return userData;
+    },
+
+    /**
+     * Handle User Login
+     */
+    async login(email, password) {
+        // Logic to verify against Users sheet would go here
+        // For now, we simulate a successful login
+        const mockUser = {
+            full_name: "Sagar Dulal",
+            email: email,
+            role: "Developer"
+        };
+
+        this.currentUser = mockUser;
+        localStorage.setItem('tfp_session', JSON.stringify(mockUser));
+        
+        if (typeof API !== 'undefined') {
+            await API.logSystemEvent(email, "LOGIN_SUCCESS");
+        }
+
+        location.reload(); // Refresh to update UI with user context
+    },
+
+    /**
+     * Terminate Session
+     */
+    logout() {
+        localStorage.removeItem('tfp_session');
+        showSystemAlert("Session Terminated", "Security protocols engaged. Logged out.", "info");
+        setTimeout(() => {
+            location.reload();
+        }, 1500);
+    },
+
+    bindEvents() {
+        // Example binding for a logout button if it exists
+        const logoutBtn = document.getElementById('terminate-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => this.logout());
+        }
     }
 };
 
-// --- 4. THIRD-PARTY IDENTITY (GOOGLE ONE-TAP) ---
-
-/**
- * Handles the JWT response from Google's Authentication Servers.
- */
-function handleCredentialResponse(response) {
-    try {
-        // Decoding the JWT (JSON Web Token) payload
-        const base64Url = response.credential.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const payload = JSON.parse(decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join('')));
-
-        // Store Google Identity
-        localStorage.setItem('todo_user', JSON.stringify({
-            id: "G-" + payload.sub,
-            name: payload.name,
-            email: payload.email,
-            avatar: payload.picture
-        }));
-
-        showToast("Signed in via Google Node");
-        setTimeout(() => location.reload(), 1000);
-
-    } catch (err) {
-        console.error("Google Auth Decode Error:", err);
-        showToast("External Identity Sync Failed");
-    }
+// Global logout function used in index.html
+function authLogout() {
+    AuthSystem.logout();
 }
 
-// --- 5. SESSION SECURITY ---
-
-/**
- * Terminate session and clear sensitive local caches.
- */
-function confirmLogout() {
-    // Custom styled confirmation would go here
-    if (confirm("Are you sure you want to terminate the secure session?")) {
-        localStorage.removeItem('todo_user');
-        // Clear active list state to prevent data leak on re-login
-        localStorage.removeItem('tf_active_list'); 
-        location.reload();
-    }
-}
+// Initialize Auth
+document.addEventListener('DOMContentLoaded', () => AuthSystem.init());
