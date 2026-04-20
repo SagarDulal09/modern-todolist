@@ -1,143 +1,86 @@
-/* Project: TaskFlow Pro
-    Developer: Sagar Dulal
-    Copyright: © 2026 Sagar Dulal
-*/
+/**
+ * Project: TaskFlow Pro 
+ * Developer: Sagar Dulal
+ * Purpose: Centralized API Controller for Database Sheets
+ * Copyright: © 2026 Sagar Dulal
+ */
 
-:root {
-    /* Core Dynamics */
-    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    --neon-blue: #00d2ff;
-    --neon-indigo: #6366f1;
-}
+const DATABASE_CONFIG = {
+    // Replace this URL with your Google Apps Script Web App URL
+    SCRIPT_URL: "https://script.google.com/macros/s/AKfycbx679qgSU8Nz95hDDJJdiXW8H8ZJRNciAMKeBvgNwjgkpY91XTPuVP8wWPevTN7YWl-JA/exec",
+    VERSION: "1.0.4",
+    DEV: "Sagar Dulal"
+};
 
-/* --- THEME DEFINITIONS --- */
+const API = {
+    /**
+     * Core Request Handler
+     * @param {Object} payload - The data to send
+     * @param {string} action - The database action (e.g., 'addTask', 'fetchLists')
+     */
+    async request(action, payload = {}) {
+        try {
+            const response = await fetch(DATABASE_CONFIG.SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Use 'cors' if your script handles OPTIONS requests
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: action,
+                    timestamp: new Date().toISOString(),
+                    device: navigator.userAgent,
+                    ...payload
+                })
+            });
 
-/* DARK MODE: Blue Neon Professional */
-.dark {
-    --bg-main: #020617;
-    --bg-sidebar: #0b1120;
-    --bg-glass: rgba(15, 23, 42, 0.8);
-    --text-primary: #ffffff;
-    --text-secondary: #94a3b8;
-    --border-color: rgba(0, 210, 255, 0.2);
-    --input-bg: #1e293b;
-    --shadow-neon: 0 0 20px rgba(0, 210, 255, 0.1);
-}
+            // Note: 'no-cors' mode will return an opaque response.
+            // For a professional setup, ensure your Apps Script return JSON with CORS headers.
+            return { status: "success", message: "Payload Dispatched to Sagar Dulal Cloud" };
+        } catch (error) {
+            console.error("API Error:", error);
+            return { status: "error", message: error.message };
+        }
+    },
 
-/* LIGHT MODE: White Neon Professional */
-.light {
-    --bg-main: #f8fafc;
-    --bg-sidebar: #ffffff;
-    --bg-glass: #ffffff;
-    --text-primary: #0f172a;
-    --text-secondary: #64748b;
-    --border-color: #e2e8f0;
-    --input-bg: #f1f5f9;
-    --shadow-neon: 0 10px 25px -5px rgba(0,0,0,0.05);
-}
+    /**
+     * Task Sheet Handlers
+     */
+    async saveTask(taskData) {
+        // Matches headers: task_id, list_id, task_text, status, start_date, end_date, start_1, end_1, start_2, end_2, created_at, device_info
+        return await this.request('insertTask', taskData);
+    },
 
-/* --- GLOBAL STYLES --- */
+    async archiveTask(archiveData) {
+        // Matches Trash_Archive headers: Includes archival_reason, archived_at, archived_by
+        return await this.request('moveToArchive', archiveData);
+    },
 
-body {
-    background-color: var(--bg-main);
-    color: var(--text-primary);
-    transition: var(--transition-smooth);
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-}
+    async updateStatus(taskId, newStatus) {
+        return await this.request('updateTaskStatus', { task_id: taskId, status: newStatus });
+    },
 
-.text-main { color: var(--text-primary); }
-.text-dim { color: var(--text-secondary); }
+    /**
+     * Collection/Lists Handlers
+     */
+    async saveList(listData) {
+        // Matches Lists headers: ListID, UserID, Title, Discription, color_tag
+        return await this.request('insertList', listData);
+    },
 
-/* --- UI COMPONENTS --- */
+    /**
+     * Log Handlers
+     */
+    async logSystemEvent(userId, eventType) {
+        // Matches System_Logs: log_id, user_id, event_type, ip_hint, timestamp
+        return await this.request('writeLog', {
+            user_id: userId,
+            event_type: eventType
+        });
+    }
+};
 
-.glass-panel {
-    background: var(--bg-glass);
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-neon);
-    backdrop-filter: blur(12px);
-}
-
-.sidebar-bg {
-    background: var(--bg-sidebar);
-}
-
-.input-field {
-    background: var(--input-bg);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    transition: var(--transition-smooth);
-}
-
-.input-field:focus {
-    border-color: var(--neon-indigo);
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-}
-
-/* --- NEON EFFECTS --- */
-
-.border-neon {
-    border: 1px solid var(--border-color);
-}
-
-.dark .border-neon:hover {
-    border-color: var(--neon-blue);
-    box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
-}
-
-.shadow-neon {
-    box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
-}
-
-/* --- SOCIAL ICONS --- */
-
-.social-icon {
-    width: 100%;
-    height: 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.75rem;
-    background: var(--bg-glass);
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
-    transition: var(--transition-smooth);
-}
-
-.social-icon:hover {
-    color: var(--neon-indigo);
-    transform: translateY(-3px);
-    border-color: var(--neon-indigo);
-}
-
-/* --- LOADER STYLES --- */
-
-.neon-pulse {
-    text-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
-}
-
-/* --- CUSTOM SCROLLBAR --- */
-
-.custom-scroll::-webkit-scrollbar {
-    width: 6px;
-}
-
-.custom-scroll::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.custom-scroll::-webkit-scrollbar-thumb {
-    background: var(--neon-indigo);
-    border-radius: 10px;
-}
-
-/* --- TASK CARD ANIMATION --- */
-
-.task-card {
-    transition: var(--transition-smooth);
-    border-left: 4px solid transparent;
-}
-
-.task-card:hover {
-    transform: scale(1.01);
-    border-left-color: var(--neon-indigo);
-}
+// Security Freeze to prevent modification by external scripts
+Object.freeze(API);
+Object.freeze(DATABASE_CONFIG);
