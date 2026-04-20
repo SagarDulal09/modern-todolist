@@ -6,7 +6,7 @@
 
 const CONFIG = {
     // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
-    SCRIPT_URL: "https://script.google.com/macros/s/XXXXX/exec",
+    SCRIPT_URL: "https://script.google.com/macros/s/AKfycbx679qgSU8Nz95hDDJJdiXW8H8ZJRNciAMKeBvgNwjgkpY91XTPuVP8wWPevTN7YWl-JA/exec",
     VERSION: "1.0.4",
     DEV: "Sagar Dulal"
 };
