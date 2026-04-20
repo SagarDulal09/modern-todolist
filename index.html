@@ -1,289 +1,201 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TaskFlow Pro | Secure Enterprise Node</title>
+    <title>TaskFlow Pro | Developer Sagar Dulal</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-    <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --glass: rgba(255, 255, 255, 0.7);
-            --bg-light: #f8fafc;
-            --bg-dark: #020617;
-        }
-
-        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.5s ease; }
-        .dark-mode { background-color: var(--bg-dark); color: white; }
-        
-        .glass-panel {
-            background: var(--glass);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .dark-mode .glass-panel {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .modern-input {
-            width: 100%;
-            padding: 1rem 1.25rem;
-            border-radius: 1rem;
-            border: 1px solid #e2e8f0;
-            background: white;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .dark-mode .modern-input {
-            background: #0f172a;
-            border-color: #1e293b;
-            color: white;
-        }
-
-        .modern-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
-
-        .input-label {
-            display: block;
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 0.5rem;
-            color: #64748b;
-        }
-
-        .task-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 2.5rem;
-            border: 1px solid #f1f5f9;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .dark-mode .task-card {
-            background: #0f172a;
-            border-color: #1e293b;
-        }
-
-        .task-card:hover { transform: translateY(-5px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); }
-
-        .status-pill {
-            padding: 0.4rem 1rem;
-            border-radius: 2rem;
-            font-size: 0.65rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            background: #f1f5f9;
-            color: #475569;
-        }
-
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-slide-up { animation: slideUp 0.6s ease forwards; }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="overflow-hidden">
+<body class="overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
 
-    <div id="preloader" class="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-white dark:bg-slate-950">
-        <div class="relative mb-8 text-center">
-            <h1 class="text-4xl font-black italic text-indigo-600">TASKFLOW<span class="text-slate-900 dark:text-white">.PRO</span></h1>
-            <p id="network-speed" class="mt-4 text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 italic">Syncing with Node...</p>
+    <div id="master-loader" class="fixed inset-0 z-[10000] bg-slate-950 flex flex-col items-center justify-center p-10">
+        <div class="relative w-40 h-40 mb-10">
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(99,102,241,0.1)" stroke-width="2" />
+                <circle id="loader-circle" cx="50" cy="50" r="45" fill="none" stroke="#6366f1" stroke-width="3" 
+                        stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round" 
+                        style="transition: stroke-dashoffset 0.1s linear;" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span id="loader-perc" class="font-black text-white text-3xl">0%</span>
+                <span class="text-[8px] text-indigo-400 font-bold tracking-widest uppercase">Syncing</span>
+            </div>
         </div>
-        <div class="w-48 h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-            <div id="loader-progress" class="h-full bg-indigo-600 transition-all duration-300" style="width: 0%"></div>
+        <h2 class="text-[10px] font-black tracking-[0.7em] text-indigo-500 uppercase mb-4 animate-pulse">Establishing Neural Connection</h2>
+        <p id="loader-status" class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Handshaking with Sagar Dulal Systems...</p>
+    </div>
+
+    <div id="alert-box" class="fixed inset-0 z-[11000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md">
+        <div class="glass-panel w-full max-w-sm p-10 rounded-[3rem] text-center border-neon">
+            <div id="alert-icon-area" class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <i id="alert-icon" class="fas fa-info text-2xl text-white"></i>
+            </div>
+            <h3 id="alert-title" class="text-xl font-black mb-2 uppercase tracking-tighter text-main">System Message</h3>
+            <p id="alert-body" class="text-dim text-sm mb-8 leading-relaxed"></p>
+            <button onclick="closeAlert()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black text-xs tracking-widest hover:scale-[1.05] active:scale-95 transition-all">ACKNOWLEDGE</button>
         </div>
     </div>
 
-    <div id="auth-container" class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-50 dark:bg-slate-950 overflow-y-auto">
-        <div class="glass-panel w-full max-w-xl p-10 rounded-[3rem] shadow-2xl">
-            <div class="text-center mb-10">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-[1.5rem] bg-indigo-600 text-white text-2xl mb-4">
-                    <i class="fas fa-shield-halved"></i>
-                </div>
-                <h2 class="text-2xl font-black dark:text-white">System Authorization</h2>
-                <p class="text-xs text-slate-500 mt-2 font-bold uppercase tracking-widest">Nepal / India Identity Node</p>
-            </div>
-
-            <div id="login-screen">
-                <form id="login-form" class="space-y-4">
-                    <div>
-                        <label class="input-label">Access Key (Email/Phone)</label>
-                        <input type="text" id="login-id" class="modern-input" required placeholder="identifier@node.com">
-                    </div>
-                    <div>
-                        <label class="input-label">Secure Passcode</label>
-                        <input type="password" id="login-pass" class="modern-input" required placeholder="••••••••">
-                    </div>
-                    <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg">Authorize Access</button>
-                </form>
-                <div class="mt-8 flex flex-col items-center gap-6">
-                    <div id="g_id_onload" data-client_id="719440937863-03c88m70a8o4q60gegqt9ungil7i3uhd.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
-                    <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
-                    <button onclick="toggleAuth(true)" class="text-[10px] font-black text-slate-400 hover:text-indigo-600 uppercase tracking-widest">Establish New Profile</button>
-                </div>
-            </div>
-
-            <div id="register-screen" class="hidden animate-slide-up">
-                <form id="register-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="col-span-2">
-                        <label class="input-label">Full Legal Name</label>
-                        <input type="text" id="reg-user" class="modern-input" required>
-                    </div>
-                    <div>
-                        <label class="input-label">Professional Email</label>
-                        <input type="email" id="reg-email" class="modern-input" required>
-                    </div>
-                    <div>
-                        <label class="input-label">Phone (+977 / +91)</label>
-                        <input type="text" id="reg-phone" class="modern-input" placeholder="98XXXXXXXX" required>
-                    </div>
-                    <div class="col-span-2">
-                        <label class="input-label">Create Secure Password</label>
-                        <input type="password" id="reg-pass" class="modern-input" required>
-                    </div>
-                    <div id="otp-area" class="col-span-2 hidden p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl border border-indigo-100 dark:border-indigo-800">
-                        <label class="input-label text-indigo-600">6-Digit Security Token</label>
-                        <div class="flex gap-2">
-                            <input type="text" id="reg-otp" maxlength="6" class="flex-1 p-3 rounded-xl border border-indigo-200 text-center font-black tracking-widest">
-                            <button type="button" onclick="verifyAndRegister()" class="px-6 bg-indigo-600 text-white rounded-xl font-black text-[10px]">VERIFY</button>
-                        </div>
-                    </div>
-                    <button type="button" id="send-otp-btn" onclick="requestOTP()" class="col-span-2 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase text-xs tracking-widest">Dispatch Token</button>
-                </form>
-                <button onclick="toggleAuth(false)" class="w-full mt-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Return to Gate</button>
+    <div id="archive-modal" class="fixed inset-0 z-[10500] hidden flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
+        <div class="glass-panel w-full max-w-md p-10 rounded-[3rem] border-neon">
+            <h3 class="text-xl font-black mb-6 text-main">Relocate to Trash_Archive</h3>
+            <p class="text-dim text-[10px] mb-4 uppercase font-bold tracking-widest">Reason for archival:</p>
+            <select id="archive-reason-select" class="input-field w-full p-4 rounded-2xl mb-4 outline-none font-bold text-sm">
+                <option value="Completed Successfully">Completed Successfully</option>
+                <option value="Objective Cancelled">Objective Cancelled</option>
+                <option value="Reprioritized">Node Re-prioritization</option>
+                <option value="Duplicate">Duplicate Entry</option>
+                <option value="Deadline Expired">Deadline Expired</option>
+                <option value="Other">Specify Other Reason</option>
+            </select>
+            <textarea id="archive-other-text" class="hidden input-field w-full p-4 rounded-2xl mb-6 h-24 outline-none text-sm" placeholder="Please provide specific archival details..."></textarea>
+            <div class="flex gap-4">
+                <button onclick="closeArchiveModal()" class="flex-1 py-4 font-black text-dim text-xs uppercase tracking-widest">Cancel</button>
+                <button id="confirm-archive-btn" class="flex-1 py-4 bg-rose-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-rose-600/20">Archive Task</button>
             </div>
         </div>
     </div>
 
-    <div id="app-screen" class="hidden flex h-screen">
-        <aside class="w-72 glass-panel border-r border-slate-200 dark:border-slate-800 flex flex-col p-8 z-50">
-            <div class="flex items-center gap-3 mb-10">
-                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white text-xs">
-                    <i class="fas fa-layer-group"></i>
+    <div id="app-root" class="opacity-0 h-screen flex flex-col md:flex-row transition-opacity duration-1000">
+        
+        <aside id="sidebar" class="fixed md:relative w-80 h-full sidebar-bg z-50 -translate-x-full md:translate-x-0 transition-transform duration-500 border-r border-slate-200 dark:border-slate-800">
+            <div class="flex flex-col h-full p-8">
+                <div class="flex items-center gap-4 mb-12">
+                    <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-neon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div>
+                        <span class="block font-black tracking-tighter text-xl text-main uppercase">TaskFlow<span class="text-indigo-500">Pro</span></span>
+                        <span class="text-[8px] font-black text-indigo-500 uppercase tracking-[0.3em]">Dev: Sagar Dulal</span>
+                    </div>
                 </div>
-                <span class="font-black text-xl tracking-tighter dark:text-white uppercase">TF<span class="text-indigo-600">PRO</span></span>
-            </div>
-            <nav id="lists-container" class="flex-1 space-y-2 overflow-y-auto custom-scroll">
-                </nav>
-            <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
-                <div class="flex justify-center gap-4 text-slate-400 mb-4">
-                    <a href="https://facebook.com/sagardulal09" target="_blank" class="hover:text-indigo-600"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://linkedin.com/in/sagardulal09" target="_blank" class="hover:text-indigo-600"><i class="fab fa-linkedin-in"></i></a>
+
+                <div class="flex-1 overflow-y-auto custom-scroll">
+                    <div class="flex items-center justify-between mb-6">
+                        <p class="text-[10px] font-black text-dim tracking-[0.3em] uppercase">My Collections</p>
+                        <button onclick="openAddListModal()" class="text-indigo-500 hover:rotate-90 transition-transform"><i class="fas fa-plus-circle"></i></button>
+                    </div>
+                    <nav id="cluster-container" class="space-y-2">
+                        </nav>
                 </div>
-                <p class="text-[7px] text-center font-black uppercase tracking-[0.3em] text-slate-300">&copy; 2026 Sagar Dulal</p>
+
+                <div class="mt-auto pt-8 border-t border-slate-200 dark:border-slate-800/50">
+                    <div class="grid grid-cols-3 gap-2 mb-8">
+                        <a href="https://www.facebook.com/sagardulal09" target="_blank" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/itsme_sagar9/" target="_blank" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.linkedin.com/in/sagardulal09/" target="_blank" class="social-icon" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://x.com/SagarDulal09" target="_blank" class="social-icon" title="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+                        <a href="https://www.tiktok.com/@sagardulal09" target="_blank" class="social-icon" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://www.threads.com/@itsme_sagar9" target="_blank" class="social-icon" title="Threads"><i class="fab fa-threads"></i></a>
+                    </div>
+                    
+                    <button id="theme-toggle-btn" class="w-full h-12 bg-indigo-600 text-white flex items-center justify-center rounded-2xl shadow-lg mb-6 hover:scale-[1.02] active:scale-95 transition-all">
+                        <i class="fas fa-adjust mr-2"></i> <span class="text-[10px] font-black uppercase tracking-widest">Switch Visual Node</span>
+                    </button>
+                    
+                    <p class="text-[8px] text-center text-dim font-bold uppercase tracking-[0.2em]">© 2026 Sagar Dulal. <br>All Rights Reserved.</p>
+                </div>
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col bg-slate-50 dark:bg-slate-950 overflow-hidden">
-            <header class="h-20 glass-panel px-10 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
-                <div>
-                    <h2 id="active-list-title" class="text-xl font-black dark:text-white uppercase italic tracking-tight">Accessing Node...</h2>
+        <main class="flex-1 h-screen overflow-y-auto p-4 md:p-12 relative custom-scroll">
+            
+            <header class="flex items-center justify-between mb-12">
+                <button onclick="toggleMobileSidebar()" class="md:hidden w-12 h-12 glass-panel rounded-2xl flex items-center justify-center text-main"><i class="fas fa-bars"></i></button>
+                
+                <div class="hidden sm:block">
+                    <h1 class="text-4xl font-black tracking-tight text-main uppercase tracking-tighter" id="current-list-title">Global Dashboard</h1>
+                    <p class="text-dim text-[10px] mt-1 uppercase font-bold tracking-[0.3em]">Operational Level: <span class="text-indigo-500">Developer</span></p>
                 </div>
+
                 <div class="flex items-center gap-4">
-                    <button id="theme-toggle" class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-indigo-600 shadow-sm">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    <div id="user-avatar" class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-black cursor-pointer" onclick="confirmLogout()">S</div>
+                    <button onclick="authLogout()" class="text-[9px] font-black text-rose-500 uppercase border border-rose-500/20 px-4 py-2 rounded-xl hover:bg-rose-500/10 transition-colors">Terminate Session</button>
+                    <div class="w-14 h-14 rounded-3xl bg-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-neon">SD</div>
                 </div>
             </header>
 
-            <div class="flex-1 overflow-y-auto p-8 custom-scroll">
-                <section id="task-input-section" class="hidden max-w-5xl mx-auto mb-12">
-                    <div class="task-card border-indigo-500/10 shadow-sm">
-                        <form id="task-form" class="space-y-6">
-                            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                                <div class="lg:col-span-3">
-                                    <label class="input-label">Mission Objective</label>
-                                    <input type="text" id="task-input" class="modern-input" placeholder="Enter task narrative..." required>
-                                </div>
+            <div class="max-w-6xl mx-auto">
+                
+                <section class="glass-panel p-8 md:p-10 rounded-[3.5rem] mb-12 border-neon">
+                    <form id="task-deployment-form" class="space-y-8">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            
+                            <div class="lg:col-span-2 space-y-6">
                                 <div>
-                                    <label class="input-label">Node Status</label>
-                                    <select id="task-status" class="modern-input">
+                                    <label class="text-[10px] font-black text-dim tracking-widest uppercase ml-2 mb-2 block">Objective Specification</label>
+                                    <input type="text" id="task-text-input" required class="input-field w-full p-5 rounded-2xl text-lg font-bold outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Define the task parameter...">
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="text-[10px] font-black text-dim tracking-widest uppercase ml-2 mb-2 block">Primary Launch</label>
+                                        <input type="datetime-local" id="t-start-1" required class="input-field w-full p-4 rounded-2xl text-xs outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] font-black text-dim tracking-widest uppercase ml-2 mb-2 block">Primary Deadline</label>
+                                        <input type="datetime-local" id="t-end-1" required class="input-field w-full p-4 rounded-2xl text-xs outline-none">
+                                    </div>
+                                </div>
+                                
+                                <div id="secondary-window" class="hidden grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top">
+                                    <div>
+                                        <label class="text-[10px] font-black text-indigo-400 tracking-widest uppercase ml-2 mb-2 block">Secondary Launch</label>
+                                        <input type="datetime-local" id="t-start-2" class="input-field w-full p-4 rounded-2xl text-xs outline-none border-indigo-500/20">
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] font-black text-indigo-400 tracking-widest uppercase ml-2 mb-2 block">Secondary Deadline</label>
+                                        <input type="datetime-local" id="t-end-2" class="input-field w-full p-4 rounded-2xl text-xs outline-none border-indigo-500/20">
+                                    </div>
+                                </div>
+                                <button type="button" id="toggle-secondary-btn" class="text-[9px] font-black text-indigo-500 uppercase tracking-widest ml-2 hover:text-indigo-400 transition-colors">
+                                    <i class="fas fa-clock mr-1"></i> Add Secondary Window (Optional)
+                                </button>
+                            </div>
+
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="text-[10px] font-black text-dim tracking-widest uppercase ml-2 mb-2 block">Initial Status</label>
+                                    <select id="t-status-select" class="input-field w-full p-5 rounded-2xl font-bold outline-none text-sm cursor-pointer">
                                         <option value="Not Started">Not Started</option>
                                         <option value="In Progress">In Progress</option>
                                         <option value="Completed">Completed</option>
                                         <option value="Delayed">Delayed</option>
                                     </select>
                                 </div>
+                                <button type="submit" class="w-full py-6 bg-indigo-600 text-white rounded-3xl font-black text-sm tracking-[0.2em] uppercase shadow-neon-blue hover:translate-y-[-2px] active:translate-y-0 transition-all">
+                                    Deploy to Cloud
+                                </button>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                <div>
-                                    <label class="input-label">Start Date</label>
-                                    <input type="date" id="task-date" class="modern-input">
-                                </div>
-                                <div>
-                                    <label class="input-label text-red-500">End Deadline</label>
-                                    <input type="date" id="task-end-date" class="modern-input border-red-500/20">
-                                </div>
-                                <div>
-                                    <label class="input-label text-indigo-600">Primary Session</label>
-                                    <div class="flex gap-2">
-                                        <input type="time" id="task-time-start" class="modern-input text-xs p-2">
-                                        <input type="time" id="task-time-end" class="modern-input text-xs p-2">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="input-label text-purple-600">Secondary Session</label>
-                                    <div class="flex gap-2">
-                                        <input type="time" id="task-sec-start" class="modern-input text-xs p-2">
-                                        <input type="time" id="task-sec-end" class="modern-input text-xs p-2">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex justify-end">
-                                <button type="submit" class="bg-indigo-600 text-white px-10 py-4 rounded-xl font-black text-[10px] uppercase tracking-widest">Deploy Objective</button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </section>
 
-                <div id="tasks-container" class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex flex-col sm:flex-row items-center justify-between mb-8 px-4 gap-4">
+                    <h2 class="text-2xl font-black text-main uppercase tracking-tighter">Objective Cluster</h2>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <select id="status-filter" class="glass-panel w-full sm:w-auto p-3 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none border-neon cursor-pointer">
+                            <option value="All">All Objectives</option>
+                            <option value="Not Started">Not Started</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Delayed">Delayed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="task-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-24">
                     </div>
             </div>
         </main>
     </div>
 
-    <div id="trash-modal" class="hidden fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md">
-        <div class="task-card w-full max-w-lg">
-            <h3 class="text-xl font-black dark:text-white mb-6 uppercase text-center">Confirm Archival?</h3>
-            <form id="trash-form" class="space-y-4">
-                <input type="hidden" id="trash-target-id">
-                <div>
-                    <label class="input-label">Reason for Relocation</label>
-                    <select id="trash-reason" class="modern-input">
-                        <option value="Objective Attained">Objective Attained</option>
-                        <option value="Timeline Exceeded">Timeline Exceeded</option>
-                        <option value="Strategic Pivot">Strategic Pivot</option>
-                    </select>
-                </div>
-                <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeTrashModal()" class="flex-1 py-4 font-black text-slate-400 text-[10px] uppercase">Abort</button>
-                    <button type="submit" class="flex-1 py-4 bg-red-600 text-white rounded-xl font-black text-[10px] uppercase">Archive</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="toast" class="fixed bottom-[-100px] left-1/2 -translate-x-1/2 glass-panel bg-slate-900/95 text-white px-10 py-5 rounded-full shadow-2xl font-black text-[9px] uppercase tracking-widest transition-all duration-700 z-[20000]">
-        <span id="toast-text">System Synced</span>
-    </div>
-
     <script src="js/api.js"></script>
-    <script src="js/app.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
